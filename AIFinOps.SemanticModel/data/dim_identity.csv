@@ -1,0 +1,13 @@
+identity_key,display_name,principal_type,upn,github_login,team,business_unit,cost_center_key
+0999cfae-085e-464f-a49d-f8851e3e5195,checkout-service,ServicePrincipal,,,Checkout,Retail,CC-1000
+dd6d3503-88f1-4fc9-a4d0-1a79c3aaf364,search-api,ServicePrincipal,,,Search,Discovery,CC-2000
+62a2cc36-edb8-4520-b7fe-05433a160c32,ds-notebooks,ServicePrincipal,,,DataScience,Platform,CC-3000
+7bec6f27-dc94-4d6d-b89a-3969513bc71e,mobile-assistant,ServicePrincipal,,,Mobile,Retail,CC-4000
+aisha.rahman,Aisha Rahman,User,aisha.rahman@contoso.com,aisha-rahman,Underwriting,Insurance,CC-1000
+marco.silva,Marco Silva,User,marco.silva@contoso.com,marco-silva,Claims,Insurance,CC-1000
+jenny.oyelaran,Jenny Oyelaran,User,jenny.oyelaran@contoso.com,jenny-oyelaran,Platform,Technology,CC-3000
+dev.patel,Dev Patel,User,dev.patel@contoso.com,dev-patel,Platform,Technology,CC-3000
+sam.chen,Sam Chen,User,sam.chen@contoso.com,sam-chen,Search,Discovery,CC-2000
+robin.hale,Robin Hale,User,robin.hale@contoso.com,robin-hale,Checkout,Retail,CC-1000
+lee.novak,Lee Novak,User,lee.novak@contoso.com,lee-novak,Data,Technology,CC-3000
+kim.arroyo,Kim Arroyo,User,kim.arroyo@contoso.com,kim-arroyo,Actuarial,Insurance,CC-4000

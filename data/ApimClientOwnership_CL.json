@@ -1,0 +1,50 @@
+[
+  {
+    "AppName": "checkout-service",
+    "BusinessUnit": "Retail",
+    "ClientId": "0999cfae-085e-464f-a49d-f8851e3e5195",
+    "CostCenter": "CC-1000",
+    "TableName": "PrimaryResult",
+    "Team": "Checkout",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimClientOwnership_CL",
+    "_ResourceId": ""
+  },
+  {
+    "AppName": "search-api",
+    "BusinessUnit": "Discovery",
+    "ClientId": "dd6d3503-88f1-4fc9-a4d0-1a79c3aaf364",
+    "CostCenter": "CC-2000",
+    "TableName": "PrimaryResult",
+    "Team": "Search",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimClientOwnership_CL",
+    "_ResourceId": ""
+  },
+  {
+    "AppName": "ds-notebooks",
+    "BusinessUnit": "Platform",
+    "ClientId": "62a2cc36-edb8-4520-b7fe-05433a160c32",
+    "CostCenter": "CC-3000",
+    "TableName": "PrimaryResult",
+    "Team": "DataScience",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimClientOwnership_CL",
+    "_ResourceId": ""
+  },
+  {
+    "AppName": "mobile-assistant",
+    "BusinessUnit": "Retail",
+    "ClientId": "7bec6f27-dc94-4d6d-b89a-3969513bc71e",
+    "CostCenter": "CC-4000",
+    "TableName": "PrimaryResult",
+    "Team": "Mobile",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimClientOwnership_CL",
+    "_ResourceId": ""
+  }
+]

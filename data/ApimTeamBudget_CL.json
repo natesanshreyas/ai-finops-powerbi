@@ -1,0 +1,42 @@
+[
+  {
+    "Currency": "USD",
+    "MonthlyBudget": "5",
+    "TableName": "PrimaryResult",
+    "Team": "Checkout",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimTeamBudget_CL",
+    "_ResourceId": ""
+  },
+  {
+    "Currency": "USD",
+    "MonthlyBudget": "50",
+    "TableName": "PrimaryResult",
+    "Team": "Search",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimTeamBudget_CL",
+    "_ResourceId": ""
+  },
+  {
+    "Currency": "USD",
+    "MonthlyBudget": "200",
+    "TableName": "PrimaryResult",
+    "Team": "DataScience",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimTeamBudget_CL",
+    "_ResourceId": ""
+  },
+  {
+    "Currency": "USD",
+    "MonthlyBudget": "25",
+    "TableName": "PrimaryResult",
+    "Team": "Mobile",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimTeamBudget_CL",
+    "_ResourceId": ""
+  }
+]

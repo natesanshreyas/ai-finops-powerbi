@@ -1,0 +1,30 @@
+[
+  {
+    "CachedInputPer1k": "0.0001",
+    "Currency": "USD",
+    "EffectiveFrom": "2025-04-14T00:00:00Z",
+    "InputPer1k": "0.0004",
+    "ModelName": "gpt-4.1-mini",
+    "ModelVersion": "2025-04-14",
+    "OutputPer1k": "0.0016",
+    "TableName": "PrimaryResult",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimModelRate_CL",
+    "_ResourceId": ""
+  },
+  {
+    "CachedInputPer1k": "0.0005",
+    "Currency": "USD",
+    "EffectiveFrom": "2025-04-14T00:00:00Z",
+    "InputPer1k": "0.002",
+    "ModelName": "gpt-4.1",
+    "ModelVersion": "2025-04-14",
+    "OutputPer1k": "0.008",
+    "TableName": "PrimaryResult",
+    "TenantId": "24bb70f1-e5cd-4e0f-9495-274ba9146731",
+    "TimeGenerated": "2026-08-07T03:48:36.725424Z",
+    "Type": "ApimModelRate_CL",
+    "_ResourceId": ""
+  }
+]

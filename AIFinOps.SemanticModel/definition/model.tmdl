@@ -1,0 +1,45 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+/// Folder holding the seven CSVs. Edit this after cloning.
+expression DataFolder = "C:\\ai-finops-powerbi\\AIFinOps.SemanticModel\\data\\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: data-folder-param
+
+ref table fact_ai_usage
+ref table dim_date
+ref table dim_platform
+ref table dim_identity
+ref table dim_model
+ref table dim_cost_center
+ref table dim_rate_card
+
+ref role Viewer
+
+relationship rel_usage_date
+	fromColumn: fact_ai_usage.usage_date
+	toColumn: dim_date.date_key
+
+relationship rel_usage_platform
+	fromColumn: fact_ai_usage.platform_key
+	toColumn: dim_platform.platform_key
+
+relationship rel_usage_identity
+	fromColumn: fact_ai_usage.identity_key
+	toColumn: dim_identity.identity_key
+
+relationship rel_usage_model
+	fromColumn: fact_ai_usage.model_key
+	toColumn: dim_model.model_key
+
+relationship rel_usage_costcenter
+	fromColumn: fact_ai_usage.cost_center_key
+	toColumn: dim_cost_center.cost_center_key
+
+role Viewer
+	modelPermission: read
