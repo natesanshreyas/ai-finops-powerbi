@@ -46,7 +46,7 @@ table dim_platform
 		mode: import
 		source =
 			let
-				Src = Csv.Document(File.Contents(DataFolder & "dim_platform.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				Src = Csv.Document(File.Contents("C:\\Users\\snatesan\\ai-finops-powerbi\\AIFinOps.SemanticModel\\data\\dim_platform.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
 				Hdr = Table.PromoteHeaders(Src, [PromoteAllScalars=true]),
 				Typed = Table.TransformColumnTypes(Hdr, {{"platform_key", type text}, {"platform_name", type text}, {"billing_model", type text}, {"native_unit", type text}, {"has_token_telemetry", type logical}, {"has_native_cost", type logical}, {"is_variable_cost", type logical}, {"data_source", type text}})
 			in

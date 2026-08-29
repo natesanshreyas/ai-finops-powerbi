@@ -19,6 +19,9 @@ RP.mkdir(parents=True, exist_ok=True)
 
 T = "\t"
 
+# Absolute path baked into every partition - no parameter to configure.
+DATA_DIR = "C:\\\\Users\\\\snatesan\\\\ai-finops-powerbi\\\\AIFinOps.SemanticModel\\\\data\\\\"
+
 
 def w(p: Path, s: str):
     p.write_text(s, encoding="utf-8")
@@ -27,16 +30,19 @@ def w(p: Path, s: str):
 
 # ---------------------------------------------------------------- project files
 w(ROOT / "AIFinOps.pbip", json.dumps({
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/pbip/pbipProperties/1.0.0/schema.json",
     "version": "1.0",
     "artifacts": [{"report": {"path": "AIFinOps.Report"}}],
     "settings": {"enableAutoRecovery": True},
 }, indent=2))
 
 w(SM / "definition.pbism", json.dumps({
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/semanticModel/definitionProperties/1.0.0/schema.json",
     "version": "4.2", "settings": {}
 }, indent=2))
 
 w(RP / "definition.pbir", json.dumps({
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definitionProperties/1.0.0/schema.json",
     "version": "4.0",
     "datasetReference": {"byPath": {"path": "../AIFinOps.SemanticModel"}},
 }, indent=2))
@@ -61,7 +67,7 @@ def m_partition(table: str, casts: dict) -> str:
         f"{T}{T}mode: import\n"
         f"{T}{T}source =\n"
         f"{T}{T}{T}let\n"
-        f'{T}{T}{T}{T}Src = Csv.Document(File.Contents(DataFolder & "{table}.csv"),'
+        f'{T}{T}{T}{T}Src = Csv.Document(File.Contents("{DATA_DIR}{table}.csv"),'
         f"[Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n"
         f"{T}{T}{T}{T}Hdr = Table.PromoteHeaders(Src, [PromoteAllScalars=true]),\n"
         f"{T}{T}{T}{T}Typed = Table.TransformColumnTypes(Hdr, {{{types}}})\n"
@@ -70,10 +76,14 @@ def m_partition(table: str, casts: dict) -> str:
     )
 
 
-def table(name: str, cols: list, casts: dict, extra: str = "", hidden=False) -> str:
+def table(name: str, cols: list, casts: dict, extra: str = "",
+          hidden=False, props: str = "") -> str:
+    """props = table-level properties (must precede children).
+       extra = child objects such as measures (must follow columns)."""
     s = f"table {name}\n"
     if hidden:
         s += f"{T}isHidden\n"
+    s += props
     s += "\n"
     for c in cols:
         s += f"{T}column {c['n']}\n"
@@ -104,27 +114,27 @@ MEASURES = f"""
 {T}measure 'Total AI Cost' = SUM(fact_ai_usage[cost_usd])
 {T}{T}formatString: \\$#,0.00
 
+{T}/// Cost sourced from a real billing surface (Foundry gateway rates, GitHub netAmount).
 {T}measure 'Billed Cost' = CALCULATE([Total AI Cost], fact_ai_usage[cost_is_estimated] = FALSE)
 {T}{T}formatString: \\$#,0.00
-{T}{T}description: Cost sourced from a real billing surface (Foundry gateway rates, GitHub netAmount).
 
+{T}/// Cost derived from dim_rate_card. Accuracy depends entirely on the customer's rate card.
 {T}measure 'Modelled Cost' = CALCULATE([Total AI Cost], fact_ai_usage[cost_is_estimated] = TRUE)
 {T}{T}formatString: \\$#,0.00
-{T}{T}description: Cost derived from dim_rate_card. Accuracy depends entirely on the customer's rate card.
 
+{T}/// Share of total spend that is billed rather than modelled. Put this on page 1.
 {T}measure 'Cost Confidence %' = DIVIDE([Billed Cost], [Total AI Cost])
 {T}{T}formatString: 0.0%
-{T}{T}description: Share of total spend that is billed rather than modelled. Put this on page 1.
 
+{T}/// Licence cost. Does not vary with usage.
 {T}measure 'Fixed Cost' =
 {T}{T}CALCULATE([Total AI Cost], fact_ai_usage[unit_type] IN {{ "seat_day" }})
 {T}{T}formatString: \\$#,0.00
-{T}{T}description: Licence cost. Does not vary with usage.
 
+{T}/// Consumption cost. The only half a FinOps programme can actually influence.
 {T}measure 'Variable Cost' =
-{T}{T}CALCULATE([Total AI Cost], NOT fact_ai_usage[unit_type] IN {{ "seat_day" }})
+{T}{T}CALCULATE([Total AI Cost], NOT ( fact_ai_usage[unit_type] IN {{ "seat_day" }} ))
 {T}{T}formatString: \\$#,0.00
-{T}{T}description: Consumption cost. The only half a FinOps programme can actually influence.
 
 {T}measure 'Variable Cost %' = DIVIDE([Variable Cost], [Total AI Cost])
 {T}{T}formatString: 0.0%
@@ -142,9 +152,9 @@ MEASURES = f"""
 {T}measure 'Cached Tokens' = SUM(fact_ai_usage[cached_tokens])
 {T}{T}formatString: #,0
 
+{T}/// Cached input bills at a lower rate. Direct, actionable saving.
 {T}measure 'Cache Hit Rate' = DIVIDE([Cached Tokens], [Input Tokens])
 {T}{T}formatString: 0.0%
-{T}{T}description: Cached input bills at a lower rate. Direct, actionable saving.
 
 {T}measure 'Cost per 1K Tokens' =
 {T}{T}DIVIDE(CALCULATE([Total AI Cost], fact_ai_usage[unit_type] = "token"), DIVIDE([Total Tokens], 1000))
@@ -158,16 +168,16 @@ MEASURES = f"""
 {T}{T}CALCULATE(SUM(fact_ai_usage[quantity]), fact_ai_usage[unit_type] = "premium_request")
 {T}{T}formatString: #,0
 
+{T}/// Usage signal only. M365 Copilot prompts are never billable.
 {T}measure 'M365 Prompts' =
 {T}{T}CALCULATE(SUM(fact_ai_usage[quantity]), fact_ai_usage[unit_type] = "prompt")
 {T}{T}formatString: #,0
-{T}{T}description: Usage signal only. M365 Copilot prompts are never billable.
 
 {T}measure 'Licensed Seats' =
 {T}{T}CALCULATE(DISTINCTCOUNT(fact_ai_usage[identity_key]), fact_ai_usage[unit_type] = "seat_day")
 {T}{T}formatString: #,0
 
-{T}measure 'Requests' = SUM(fact_ai_usage[requests])
+{T}measure 'Total Requests' = SUM(fact_ai_usage[requests])
 {T}{T}formatString: #,0
 
 {T}measure 'Active Users' = DISTINCTCOUNT(fact_ai_usage[identity_key])
@@ -176,6 +186,7 @@ MEASURES = f"""
 {T}measure 'Cost per Active User' = DIVIDE([Total AI Cost], [Active Users])
 {T}{T}formatString: \\$#,0.00
 
+{T}/// Users holding a paid seat with zero activity in 28 days. The recoverable number.
 {T}measure 'Idle Licensed Users' =
 {T}{T}VAR Win = DATESINPERIOD(dim_date[date_key], MAX(dim_date[date_key]), -28, DAY)
 {T}{T}RETURN
@@ -183,18 +194,17 @@ MEASURES = f"""
 {T}{T}{T}FILTER(
 {T}{T}{T}{T}VALUES(dim_identity[identity_key]),
 {T}{T}{T}{T}CALCULATE([Licensed Seats], Win) > 0
-{T}{T}{T}{T}{T}&& CALCULATE([M365 Prompts] + [Premium Requests] + [Requests], Win) = 0
+{T}{T}{T}{T}{T}&& CALCULATE([M365 Prompts] + [Premium Requests] + [Total Requests], Win) = 0
 {T}{T}{T})
 {T}{T})
 {T}{T}formatString: #,0
-{T}{T}description: Users holding a paid seat with zero activity in 28 days. The recoverable number.
 
 {T}measure 'Idle Seat Waste (monthly)' =
 {T}{T}[Idle Licensed Users] * 30 * AVERAGE(dim_rate_card[unit_price_usd])
 {T}{T}formatString: \\$#,0.00
 
 {T}measure 'Error Rate' =
-{T}{T}DIVIDE(CALCULATE([Requests], fact_ai_usage[is_error] = "True"), [Requests])
+{T}{T}DIVIDE(CALCULATE([Total Requests], fact_ai_usage[is_error] = "True"), [Total Requests])
 {T}{T}formatString: 0.0%
 
 {T}measure 'Avg Latency (ms)' =
@@ -246,7 +256,7 @@ w(SM / "definition" / "tables" / "dim_date.tmdl", table(
      {"n": "day_name", "t": STR}, {"n": "is_weekday", "t": BOOL}, {"n": "year_month", "t": STR}],
     {"date_key": Mdate, "year": Mint, "quarter": Mstr, "month": Mint, "month_name": Mstr,
      "day": Mint, "day_name": Mstr, "is_weekday": Mlog, "year_month": Mstr},
-    extra=f"{T}dataCategory: Time\n\n"))
+    props=f"{T}dataCategory: Time\n"))
 
 w(SM / "definition" / "tables" / "dim_platform.tmdl", table(
     "dim_platform",
@@ -304,10 +314,6 @@ w(SM / "definition" / "model.tmdl", f"""model Model
 {T}{T}legacyRedirects
 {T}{T}returnErrorValuesAsNull
 
-/// Folder holding the seven CSVs. Edit this after cloning.
-expression DataFolder = "C:\\\\ai-finops-powerbi\\\\AIFinOps.SemanticModel\\\\data\\\\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
-{T}lineageTag: data-folder-param
-
 ref table fact_ai_usage
 ref table dim_date
 ref table dim_platform
@@ -315,8 +321,6 @@ ref table dim_identity
 ref table dim_model
 ref table dim_cost_center
 ref table dim_rate_card
-
-ref role Viewer
 
 relationship rel_usage_date
 {T}fromColumn: fact_ai_usage.usage_date
@@ -337,9 +341,25 @@ relationship rel_usage_model
 relationship rel_usage_costcenter
 {T}fromColumn: fact_ai_usage.cost_center_key
 {T}toColumn: dim_cost_center.cost_center_key
-
-role Viewer
-{T}modelPermission: read
 """)
 
+
+# --- guard: Power BI names are case-insensitive; a measure may not share a name
+# with a column in the same table. TMDL deserializers do not catch this.
+def _check_collisions():
+    import glob, re as _re
+    bad = []
+    for f in glob.glob(str(SM / "definition" / "tables" / "*.tmdl")):
+        txt = Path(f).read_text()
+        cols = {c.lower() for c in _re.findall(r"^\tcolumn (\S+)", txt, _re.M)}
+        meas = _re.findall(r"^\tmeasure '([^']+)'", txt, _re.M)
+        for m in meas:
+            if m.lower() in cols:
+                bad.append(f"{Path(f).name}: measure '{m}' collides with a column")
+    if bad:
+        raise SystemExit("NAME COLLISIONS:\n  " + "\n  ".join(bad))
+    print("  no measure/column name collisions")
+
+
+_check_collisions()
 print("\nPBIP written.")
