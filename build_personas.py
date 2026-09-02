@@ -18,6 +18,7 @@ ALIAS = {
     "dim_model": "dm", "dim_identity": "di", "dim_business_unit": "dbu",
     "dim_application": "da", "dim_environment": "de", "dim_cost_center": "dcc",
     "dim_rate_card": "drc",
+    "dim_data_source": "dds",
 }
 # which fields are measures (all live on fact_ai_usage)
 _MEASURES = {
@@ -35,10 +36,15 @@ _MEASURES = {
 }
 
 
+_DS_MEASURES = {"Extractable Signals", "Signals Live (REAL)", "Signals Available"}
+
+
 def _ref(entity, prop):
     """One Select entry + queryRef, dispatching measure vs column."""
     src = {"Expression": {"SourceRef": {"Source": ALIAS[entity]}}, "Property": prop}
-    kind = "Measure" if (entity == "fact_ai_usage" and prop in _MEASURES) else "Column"
+    is_meas = (entity == "fact_ai_usage" and prop in _MEASURES) or \
+              (entity == "dim_data_source" and prop in _DS_MEASURES)
+    kind = "Measure" if is_meas else "Column"
     return {kind: src, "Name": f"{entity}.{prop}"}, f"{entity}.{prop}"
 
 
@@ -238,12 +244,43 @@ def page_license():
     return section(8, "PERSONA_LIC", "9 · License Optimization", v)
 
 
+def _ds_chart(x, y, w, h, vtype, cat_c, meas, title):
+    s1, q1 = _ref("dim_data_source", cat_c)
+    s2, q2 = _ref("dim_data_source", meas)
+    return _vc(x, y, w, h, f"vc{next(_ids)}", vtype,
+               {"Category": [{"queryRef": q1}], "Y": [{"queryRef": q2}]},
+               ["dim_data_source"], [s1, s2], title)
+
+
+def page_datasources():
+    v = cards_row([
+        ("dim_data_source", "Extractable Signals", "Extractable Signals"),
+        ("dim_data_source", "Signals Live (REAL)", "Live (REAL) Now"),
+        ("dim_data_source", "Signals Available", "Available (API exists)"),
+    ])
+    v += [_ds_chart(16, 150, 624, 300, "clusteredColumnChart", "platform",
+                    "Extractable Signals", "Signals by platform"),
+          _ds_chart(656, 150, 608, 300, "clusteredBarChart", "availability",
+                    "Extractable Signals", "Signals by availability (REAL/AVAILABLE/MOCK/ROADMAP)"),
+          table(16, 466, 1248, 236, [
+              ("dim_data_source", "platform"),
+              ("dim_data_source", "signal_category"),
+              ("dim_data_source", "signal"),
+              ("dim_data_source", "source_api"),
+              ("dim_data_source", "identity_granularity"),
+              ("dim_data_source", "cost_fidelity"),
+              ("dim_data_source", "availability")],
+              "Full extractable-data spectrum — every AI cost signal, its source & fidelity")]
+    return section(9, "DATA_SPECTRUM", "10 · Extractable Data Spectrum", v)
+
+
 def main():
     r = json.load(open(RP))
-    persona_names = {"PERSONA_CFO", "PERSONA_GOV", "PERSONA_ENG", "PERSONA_APP", "PERSONA_LIC"}
+    persona_names = {"PERSONA_CFO", "PERSONA_GOV", "PERSONA_ENG", "PERSONA_APP",
+                     "PERSONA_LIC", "DATA_SPECTRUM"}
     r["sections"] = [s for s in r["sections"] if s["name"] not in persona_names]
     r["sections"] += [page_cfo(), page_governance(), page_engineering(),
-                      page_appowner(), page_license()]
+                      page_appowner(), page_license(), page_datasources()]
     for i, s in enumerate(r["sections"]):
         s["ordinal"] = i
     with open(RP, "w") as f:

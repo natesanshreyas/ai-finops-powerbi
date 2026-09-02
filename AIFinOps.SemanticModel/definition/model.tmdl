@@ -25,6 +25,7 @@ ref table dim_rate_card
 ref table dim_business_unit
 ref table dim_application
 ref table dim_environment
+ref table dim_data_source
 
 relationship rel_usage_date
 	fromColumn: fact_ai_usage.usage_date

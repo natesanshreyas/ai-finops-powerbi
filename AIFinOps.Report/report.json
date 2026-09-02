@@ -687,6 +687,73 @@
           "filters": "[]"
         }
       ]
+    },
+    {
+      "id": 9,
+      "name": "DATA_SPECTRUM",
+      "displayName": "10 \u00b7 Extractable Data Spectrum",
+      "ordinal": 9,
+      "width": 1280,
+      "height": 720,
+      "displayOption": 1,
+      "config": "{}",
+      "filters": "[]",
+      "visualContainers": [
+        {
+          "x": 16,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc40\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_data_source.Extractable Signals\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dds\", \"Entity\": \"dim_data_source\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"Extractable Signals\"}, \"Name\": \"dim_data_source.Extractable Signals\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Extractable Signals'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 224,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc41\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 224, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_data_source.Signals Live (REAL)\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dds\", \"Entity\": \"dim_data_source\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"Signals Live (REAL)\"}, \"Name\": \"dim_data_source.Signals Live (REAL)\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Live (REAL) Now'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 432,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc42\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 432, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_data_source.Signals Available\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dds\", \"Entity\": \"dim_data_source\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"Signals Available\"}, \"Name\": \"dim_data_source.Signals Available\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Available (API exists)'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 150,
+          "z": 0,
+          "width": 624,
+          "height": 300,
+          "config": "{\"name\": \"vc43\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 150, \"z\": 0, \"width\": 624, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredColumnChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_data_source.platform\"}], \"Y\": [{\"queryRef\": \"dim_data_source.Extractable Signals\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dds\", \"Entity\": \"dim_data_source\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"platform\"}, \"Name\": \"dim_data_source.platform\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"Extractable Signals\"}, \"Name\": \"dim_data_source.Extractable Signals\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Signals by platform'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 656,
+          "y": 150,
+          "z": 0,
+          "width": 608,
+          "height": 300,
+          "config": "{\"name\": \"vc44\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 656, \"y\": 150, \"z\": 0, \"width\": 608, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredBarChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_data_source.availability\"}], \"Y\": [{\"queryRef\": \"dim_data_source.Extractable Signals\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dds\", \"Entity\": \"dim_data_source\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"availability\"}, \"Name\": \"dim_data_source.availability\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"Extractable Signals\"}, \"Name\": \"dim_data_source.Extractable Signals\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Signals by availability (REAL/AVAILABLE/MOCK/ROADMAP)'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 466,
+          "z": 0,
+          "width": 1248,
+          "height": 236,
+          "config": "{\"name\": \"vc45\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 466, \"z\": 0, \"width\": 1248, \"height\": 236}}], \"singleVisual\": {\"visualType\": \"tableEx\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_data_source.platform\"}, {\"queryRef\": \"dim_data_source.signal_category\"}, {\"queryRef\": \"dim_data_source.signal\"}, {\"queryRef\": \"dim_data_source.source_api\"}, {\"queryRef\": \"dim_data_source.identity_granularity\"}, {\"queryRef\": \"dim_data_source.cost_fidelity\"}, {\"queryRef\": \"dim_data_source.availability\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dds\", \"Entity\": \"dim_data_source\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"platform\"}, \"Name\": \"dim_data_source.platform\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"signal_category\"}, \"Name\": \"dim_data_source.signal_category\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"signal\"}, \"Name\": \"dim_data_source.signal\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"source_api\"}, \"Name\": \"dim_data_source.source_api\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"identity_granularity\"}, \"Name\": \"dim_data_source.identity_granularity\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"cost_fidelity\"}, \"Name\": \"dim_data_source.cost_fidelity\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dds\"}}, \"Property\": \"availability\"}, \"Name\": \"dim_data_source.availability\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Full extractable-data spectrum \\u2014 every AI cost signal, its source & fidelity'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ]
     }
   ],
   "filters": "[]",

@@ -25,7 +25,7 @@ python3 build_data.py        # regenerate CSVs
 
 > If Desktop rejects `report.json`, delete it and reopen the `.pbip`. Desktop regenerates a
 > blank report bound to the same semantic model and you drag the measures on. The semantic
-> model is the durable artifact — 10 tables, 8 relationships, 39 measures.
+> model is the durable artifact — 11 tables, 8 relationships, 42 measures.
 
 ---
 
@@ -99,9 +99,10 @@ These answer actual / discounted / forecast / chargeback for the CFO persona.
 7. **Engineering** — token consumption, unit economics by model, latency, error rate (Foundry REAL)
 8. **Application Owner** — spend by application, trend, MoM delta, criticality
 9. **License Optimization** — idle licensed users, reclaimable spend, seat utilisation
+10. **Extractable Data Spectrum** — full catalogue of every AI cost signal per platform (source API, identity grain, cost fidelity) and its status: REAL / AVAILABLE / MOCK / ROADMAP
 
 Persona pages are (re)generated additively by `python3 build_personas.py`, which
-preserves pages 1–4 and only touches sections named `PERSONA_*`.
+preserves pages 1–4 and only touches sections named `PERSONA_*` / `DATA_SPECTRUM`.
 
 ---
 
@@ -203,16 +204,16 @@ depending purely on the invoker's licence. `msdyn_creditconsumed` is already net
 ```
 build_data.py                     real gateway JSON + mock → 7 CSVs
 build_dimensions.py               additive: conformed BU/app/env dims + universal identity
-build_personas.py                 additive: 5 persona report pages
+build_personas.py                 additive: 5 persona pages + extractable data spectrum
 build_pbip.py                     → TMDL semantic model
 build_report.py                   → 4-page report layout
 AIFinOps.pbip                     open this
 AIFinOps.SemanticModel/
   definition/model.tmdl           relationships + DataFolder parameter
-  definition/tables/*.tmdl        10 tables, 39 measures
+  definition/tables/*.tmdl        11 tables, 42 measures
   data/*.csv                      ← swap these for live extracts
   synonyms.linguistic.json        Q&A / Fabric Copilot synonyms (standalone, apply-on-demand)
-AIFinOps.Report/report.json       9 pages (4 original + 5 persona)
+AIFinOps.Report/report.json       10 pages (4 original + 5 persona + data spectrum)
 platform/medallion/               Fabric bronze/silver/gold notebooks (→ the gold star)
 docs/ARCHITECTURE.md              decision record (rationale/tradeoffs/value/effort)
 docs/ai-insight-layer.md          Fabric Copilot + NL + RAG strategy
