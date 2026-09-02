@@ -271,6 +271,422 @@
           "filters": "[]"
         }
       ]
+    },
+    {
+      "id": 4,
+      "name": "PERSONA_CFO",
+      "displayName": "5 \u00b7 CFO \u2014 Finance",
+      "ordinal": 4,
+      "width": 1280,
+      "height": 720,
+      "displayOption": 1,
+      "config": "{}",
+      "filters": "[]",
+      "visualContainers": [
+        {
+          "x": 16,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc1\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Total AI Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Total AI Spend'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 224,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc2\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 224, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Discounted Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Discounted Cost\"}, \"Name\": \"fact_ai_usage.Discounted Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Net of Discounts'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 432,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc3\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 432, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Forecast Cost (EOM)\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Forecast Cost (EOM)\"}, \"Name\": \"fact_ai_usage.Forecast Cost (EOM)\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Forecast (EOM)'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 640,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc4\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 640, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Monthly Budget\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Monthly Budget\"}, \"Name\": \"fact_ai_usage.Monthly Budget\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Monthly Budget'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 848,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc5\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 848, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Budget Variance %\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Budget Variance %\"}, \"Name\": \"fact_ai_usage.Budget Variance %\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Budget Variance %'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 1056,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc6\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 1056, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Chargeback Coverage %\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Chargeback Coverage %\"}, \"Name\": \"fact_ai_usage.Chargeback Coverage %\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Chargeback Coverage'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 150,
+          "z": 0,
+          "width": 624,
+          "height": 300,
+          "config": "{\"name\": \"vc7\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 150, \"z\": 0, \"width\": 624, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredColumnChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_business_unit.business_unit_name\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Chargeback Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dbu\", \"Entity\": \"dim_business_unit\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dbu\"}}, \"Property\": \"business_unit_name\"}, \"Name\": \"dim_business_unit.business_unit_name\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Chargeback Cost\"}, \"Name\": \"fact_ai_usage.Chargeback Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Chargeback by business unit'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 656,
+          "y": 150,
+          "z": 0,
+          "width": 608,
+          "height": 300,
+          "config": "{\"name\": \"vc8\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 656, \"y\": 150, \"z\": 0, \"width\": 608, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"lineChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_date.date_key\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Total AI Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dd\", \"Entity\": \"dim_date\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dd\"}}, \"Property\": \"date_key\"}, \"Name\": \"dim_date.date_key\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Daily spend trend'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 466,
+          "z": 0,
+          "width": 1248,
+          "height": 236,
+          "config": "{\"name\": \"vc9\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 466, \"z\": 0, \"width\": 1248, \"height\": 236}}], \"singleVisual\": {\"visualType\": \"tableEx\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_business_unit.business_unit_name\"}, {\"queryRef\": \"dim_business_unit.division\"}, {\"queryRef\": \"fact_ai_usage.Total AI Cost\"}, {\"queryRef\": \"fact_ai_usage.Chargeback Cost\"}, {\"queryRef\": \"fact_ai_usage.Monthly Budget\"}, {\"queryRef\": \"fact_ai_usage.Budget Variance\"}, {\"queryRef\": \"fact_ai_usage.Budget Variance %\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dbu\", \"Entity\": \"dim_business_unit\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dbu\"}}, \"Property\": \"business_unit_name\"}, \"Name\": \"dim_business_unit.business_unit_name\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dbu\"}}, \"Property\": \"division\"}, \"Name\": \"dim_business_unit.division\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Chargeback Cost\"}, \"Name\": \"fact_ai_usage.Chargeback Cost\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Monthly Budget\"}, \"Name\": \"fact_ai_usage.Monthly Budget\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Budget Variance\"}, \"Name\": \"fact_ai_usage.Budget Variance\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Budget Variance %\"}, \"Name\": \"fact_ai_usage.Budget Variance %\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Business-unit allocation vs budget'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "PERSONA_GOV",
+      "displayName": "6 \u00b7 Governance",
+      "ordinal": 5,
+      "width": 1280,
+      "height": 720,
+      "displayOption": 1,
+      "config": "{}",
+      "filters": "[]",
+      "visualContainers": [
+        {
+          "x": 16,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc10\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Active Users\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Active Users\"}, \"Name\": \"fact_ai_usage.Active Users\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Active Principals'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 224,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc11\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 224, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Licensed Seats\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Licensed Seats\"}, \"Name\": \"fact_ai_usage.Licensed Seats\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Licensed Seats'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 432,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc12\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 432, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Total Requests\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total Requests\"}, \"Name\": \"fact_ai_usage.Total Requests\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Total Requests'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 640,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc13\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 640, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Cost Confidence %\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Cost Confidence %\"}, \"Name\": \"fact_ai_usage.Cost Confidence %\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Cost Confidence'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 150,
+          "z": 0,
+          "width": 624,
+          "height": 300,
+          "config": "{\"name\": \"vc14\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 150, \"z\": 0, \"width\": 624, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredColumnChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_platform.platform_name\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Total AI Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dp\", \"Entity\": \"dim_platform\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dp\"}}, \"Property\": \"platform_name\"}, \"Name\": \"dim_platform.platform_name\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Platform adoption (spend)'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 656,
+          "y": 150,
+          "z": 0,
+          "width": 608,
+          "height": 300,
+          "config": "{\"name\": \"vc15\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 656, \"y\": 150, \"z\": 0, \"width\": 608, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredBarChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_identity.identity_class\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Active Users\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"di\", \"Entity\": \"dim_identity\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"di\"}}, \"Property\": \"identity_class\"}, \"Name\": \"dim_identity.identity_class\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Active Users\"}, \"Name\": \"fact_ai_usage.Active Users\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Adoption by principal type'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 466,
+          "z": 0,
+          "width": 1248,
+          "height": 236,
+          "config": "{\"name\": \"vc16\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 466, \"z\": 0, \"width\": 1248, \"height\": 236}}], \"singleVisual\": {\"visualType\": \"tableEx\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_platform.platform_name\"}, {\"queryRef\": \"dim_platform.data_source\"}, {\"queryRef\": \"dim_platform.billing_model\"}, {\"queryRef\": \"dim_platform.is_variable_cost\"}, {\"queryRef\": \"fact_ai_usage.Total AI Cost\"}, {\"queryRef\": \"fact_ai_usage.Cost Confidence %\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dp\", \"Entity\": \"dim_platform\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dp\"}}, \"Property\": \"platform_name\"}, \"Name\": \"dim_platform.platform_name\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dp\"}}, \"Property\": \"data_source\"}, \"Name\": \"dim_platform.data_source\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dp\"}}, \"Property\": \"billing_model\"}, \"Name\": \"dim_platform.billing_model\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dp\"}}, \"Property\": \"is_variable_cost\"}, \"Name\": \"dim_platform.is_variable_cost\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Cost Confidence %\"}, \"Name\": \"fact_ai_usage.Cost Confidence %\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Platform policy & risk register \\u2014 REAL vs MOCK provenance'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "PERSONA_ENG",
+      "displayName": "7 \u00b7 Engineering",
+      "ordinal": 6,
+      "width": 1280,
+      "height": 720,
+      "displayOption": 1,
+      "config": "{}",
+      "filters": "[]",
+      "visualContainers": [
+        {
+          "x": 16,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc17\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Total Tokens\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total Tokens\"}, \"Name\": \"fact_ai_usage.Total Tokens\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Total Tokens'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 224,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc18\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 224, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Input Tokens\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Input Tokens\"}, \"Name\": \"fact_ai_usage.Input Tokens\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Input Tokens'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 432,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc19\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 432, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Output Tokens\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Output Tokens\"}, \"Name\": \"fact_ai_usage.Output Tokens\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Output Tokens'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 640,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc20\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 640, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Cache Hit Rate\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Cache Hit Rate\"}, \"Name\": \"fact_ai_usage.Cache Hit Rate\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Cache Hit Rate'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 848,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc21\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 848, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Avg Latency (ms)\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Avg Latency (ms)\"}, \"Name\": \"fact_ai_usage.Avg Latency (ms)\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Avg Latency (ms)'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 1056,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc22\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 1056, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Error Rate\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Error Rate\"}, \"Name\": \"fact_ai_usage.Error Rate\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Error Rate'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 150,
+          "z": 0,
+          "width": 624,
+          "height": 300,
+          "config": "{\"name\": \"vc23\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 150, \"z\": 0, \"width\": 624, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"lineChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_date.date_key\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Total Tokens\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dd\", \"Entity\": \"dim_date\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dd\"}}, \"Property\": \"date_key\"}, \"Name\": \"dim_date.date_key\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total Tokens\"}, \"Name\": \"fact_ai_usage.Total Tokens\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Token consumption trend'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 656,
+          "y": 150,
+          "z": 0,
+          "width": 608,
+          "height": 300,
+          "config": "{\"name\": \"vc24\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 656, \"y\": 150, \"z\": 0, \"width\": 608, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredColumnChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_model.model_name\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Cost per 1K Tokens\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dm\", \"Entity\": \"dim_model\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dm\"}}, \"Property\": \"model_name\"}, \"Name\": \"dim_model.model_name\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Cost per 1K Tokens\"}, \"Name\": \"fact_ai_usage.Cost per 1K Tokens\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Unit economics by model'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 466,
+          "z": 0,
+          "width": 1248,
+          "height": 236,
+          "config": "{\"name\": \"vc25\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 466, \"z\": 0, \"width\": 1248, \"height\": 236}}], \"singleVisual\": {\"visualType\": \"tableEx\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_model.model_name\"}, {\"queryRef\": \"dim_model.provider\"}, {\"queryRef\": \"fact_ai_usage.Total Tokens\"}, {\"queryRef\": \"fact_ai_usage.Cached Tokens\"}, {\"queryRef\": \"fact_ai_usage.Cache Hit Rate\"}, {\"queryRef\": \"fact_ai_usage.Avg Latency (ms)\"}, {\"queryRef\": \"fact_ai_usage.Error Rate\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dm\", \"Entity\": \"dim_model\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dm\"}}, \"Property\": \"model_name\"}, \"Name\": \"dim_model.model_name\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dm\"}}, \"Property\": \"provider\"}, \"Name\": \"dim_model.provider\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total Tokens\"}, \"Name\": \"fact_ai_usage.Total Tokens\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Cached Tokens\"}, \"Name\": \"fact_ai_usage.Cached Tokens\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Cache Hit Rate\"}, \"Name\": \"fact_ai_usage.Cache Hit Rate\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Avg Latency (ms)\"}, \"Name\": \"fact_ai_usage.Avg Latency (ms)\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Error Rate\"}, \"Name\": \"fact_ai_usage.Error Rate\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Model performance & APIM telemetry (Foundry = REAL)'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "PERSONA_APP",
+      "displayName": "8 \u00b7 Application Owner",
+      "ordinal": 7,
+      "width": 1280,
+      "height": 720,
+      "displayOption": 1,
+      "config": "{}",
+      "filters": "[]",
+      "visualContainers": [
+        {
+          "x": 16,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc26\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Total AI Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Application Spend'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 224,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc27\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 224, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Variable Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Variable Cost\"}, \"Name\": \"fact_ai_usage.Variable Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Variable Cost'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 432,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc28\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 432, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Total Tokens\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total Tokens\"}, \"Name\": \"fact_ai_usage.Total Tokens\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Total Tokens'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 640,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc29\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 640, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.MoM Cost Delta %\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"MoM Cost Delta %\"}, \"Name\": \"fact_ai_usage.MoM Cost Delta %\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'MoM Cost Delta'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 150,
+          "z": 0,
+          "width": 624,
+          "height": 300,
+          "config": "{\"name\": \"vc30\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 150, \"z\": 0, \"width\": 624, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredColumnChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_application.application_name\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Total AI Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"da\", \"Entity\": \"dim_application\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"da\"}}, \"Property\": \"application_name\"}, \"Name\": \"dim_application.application_name\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Spend by application'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 656,
+          "y": 150,
+          "z": 0,
+          "width": 608,
+          "height": 300,
+          "config": "{\"name\": \"vc31\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 656, \"y\": 150, \"z\": 0, \"width\": 608, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"lineChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_date.date_key\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Total AI Cost\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dd\", \"Entity\": \"dim_date\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dd\"}}, \"Property\": \"date_key\"}, \"Name\": \"dim_date.date_key\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Application spend trend'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 466,
+          "z": 0,
+          "width": 1248,
+          "height": 236,
+          "config": "{\"name\": \"vc32\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 466, \"z\": 0, \"width\": 1248, \"height\": 236}}], \"singleVisual\": {\"visualType\": \"tableEx\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_application.application_name\"}, {\"queryRef\": \"dim_application.application_type\"}, {\"queryRef\": \"dim_application.criticality\"}, {\"queryRef\": \"fact_ai_usage.Total AI Cost\"}, {\"queryRef\": \"fact_ai_usage.Total Tokens\"}, {\"queryRef\": \"fact_ai_usage.MoM Cost Delta %\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"da\", \"Entity\": \"dim_application\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"da\"}}, \"Property\": \"application_name\"}, \"Name\": \"dim_application.application_name\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"da\"}}, \"Property\": \"application_type\"}, \"Name\": \"dim_application.application_type\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"da\"}}, \"Property\": \"criticality\"}, \"Name\": \"dim_application.criticality\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total AI Cost\"}, \"Name\": \"fact_ai_usage.Total AI Cost\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total Tokens\"}, \"Name\": \"fact_ai_usage.Total Tokens\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"MoM Cost Delta %\"}, \"Name\": \"fact_ai_usage.MoM Cost Delta %\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Application cost, model usage & trend'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "PERSONA_LIC",
+      "displayName": "9 \u00b7 License Optimization",
+      "ordinal": 8,
+      "width": 1280,
+      "height": 720,
+      "displayOption": 1,
+      "config": "{}",
+      "filters": "[]",
+      "visualContainers": [
+        {
+          "x": 16,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc33\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Idle Licensed Users\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Idle Licensed Users\"}, \"Name\": \"fact_ai_usage.Idle Licensed Users\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Idle Licensed Users'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 224,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc34\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 224, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Idle Seat Waste (monthly)\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Idle Seat Waste (monthly)\"}, \"Name\": \"fact_ai_usage.Idle Seat Waste (monthly)\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Reclaimable / mo'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 432,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc35\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 432, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Licensed Seats\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Licensed Seats\"}, \"Name\": \"fact_ai_usage.Licensed Seats\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Licensed Seats'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 640,
+          "y": 16,
+          "z": 0,
+          "width": 200,
+          "height": 110,
+          "config": "{\"name\": \"vc36\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 640, \"y\": 16, \"z\": 0, \"width\": 200, \"height\": 110}}], \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_ai_usage.Cost per Active User\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Cost per Active User\"}, \"Name\": \"fact_ai_usage.Cost per Active User\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Cost / Active User'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 150,
+          "z": 0,
+          "width": 624,
+          "height": 300,
+          "config": "{\"name\": \"vc37\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 150, \"z\": 0, \"width\": 624, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredColumnChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_business_unit.business_unit_name\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Idle Seat Waste (monthly)\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dbu\", \"Entity\": \"dim_business_unit\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dbu\"}}, \"Property\": \"business_unit_name\"}, \"Name\": \"dim_business_unit.business_unit_name\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Idle Seat Waste (monthly)\"}, \"Name\": \"fact_ai_usage.Idle Seat Waste (monthly)\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Reclaimable spend by business unit'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 656,
+          "y": 150,
+          "z": 0,
+          "width": 608,
+          "height": 300,
+          "config": "{\"name\": \"vc38\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 656, \"y\": 150, \"z\": 0, \"width\": 608, \"height\": 300}}], \"singleVisual\": {\"visualType\": \"clusteredBarChart\", \"projections\": {\"Category\": [{\"queryRef\": \"dim_business_unit.business_unit_name\"}], \"Y\": [{\"queryRef\": \"fact_ai_usage.Active Users\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"dbu\", \"Entity\": \"dim_business_unit\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"dbu\"}}, \"Property\": \"business_unit_name\"}, \"Name\": \"dim_business_unit.business_unit_name\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Active Users\"}, \"Name\": \"fact_ai_usage.Active Users\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Active users by business unit'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 16,
+          "y": 466,
+          "z": 0,
+          "width": 1248,
+          "height": 236,
+          "config": "{\"name\": \"vc39\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 16, \"y\": 466, \"z\": 0, \"width\": 1248, \"height\": 236}}], \"singleVisual\": {\"visualType\": \"tableEx\", \"projections\": {\"Values\": [{\"queryRef\": \"dim_identity.display_name\"}, {\"queryRef\": \"dim_identity.team\"}, {\"queryRef\": \"dim_identity.business_unit\"}, {\"queryRef\": \"fact_ai_usage.Licensed Seats\"}, {\"queryRef\": \"fact_ai_usage.Total Requests\"}, {\"queryRef\": \"fact_ai_usage.M365 Prompts\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"di\", \"Entity\": \"dim_identity\", \"Type\": 0}, {\"Name\": \"fau\", \"Entity\": \"fact_ai_usage\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"di\"}}, \"Property\": \"display_name\"}, \"Name\": \"dim_identity.display_name\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"di\"}}, \"Property\": \"team\"}, \"Name\": \"dim_identity.team\"}, {\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"di\"}}, \"Property\": \"business_unit\"}, \"Name\": \"dim_identity.business_unit\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Licensed Seats\"}, \"Name\": \"fact_ai_usage.Licensed Seats\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"Total Requests\"}, \"Name\": \"fact_ai_usage.Total Requests\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"fau\"}}, \"Property\": \"M365 Prompts\"}, \"Name\": \"fact_ai_usage.M365 Prompts\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {}, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Seat utilisation \\u2014 zero activity = reclaim candidate'\"}}}, \"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ]
     }
   ],
   "filters": "[]",

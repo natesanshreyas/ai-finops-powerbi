@@ -93,6 +93,16 @@ These answer actual / discounted / forecast / chargeback for the CFO persona.
 3. **Waste & Utilisation** — idle seats and recoverable spend
 4. **Rate Card** — the editable input, plus billed-vs-modelled by platform
 
+**Persona pages (v2)** — one page per stakeholder, built on the conformed dims:
+5. **CFO — Finance** — spend, discounts, forecast, budget variance, chargeback by BU
+6. **Governance** — adoption by principal type, platform usage, REAL-vs-MOCK risk register
+7. **Engineering** — token consumption, unit economics by model, latency, error rate (Foundry REAL)
+8. **Application Owner** — spend by application, trend, MoM delta, criticality
+9. **License Optimization** — idle licensed users, reclaimable spend, seat utilisation
+
+Persona pages are (re)generated additively by `python3 build_personas.py`, which
+preserves pages 1–4 and only touches sections named `PERSONA_*`.
+
 ---
 
 ## Cost rationalization — the rationale
