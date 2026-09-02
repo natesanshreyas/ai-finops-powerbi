@@ -202,6 +202,8 @@ depending purely on the invoker's licence. `msdyn_creditconsumed` is already net
 
 ```
 build_data.py                     real gateway JSON + mock → 7 CSVs
+build_dimensions.py               additive: conformed BU/app/env dims + universal identity
+build_personas.py                 additive: 5 persona report pages
 build_pbip.py                     → TMDL semantic model
 build_report.py                   → 4-page report layout
 AIFinOps.pbip                     open this
@@ -209,7 +211,11 @@ AIFinOps.SemanticModel/
   definition/model.tmdl           relationships + DataFolder parameter
   definition/tables/*.tmdl        10 tables, 39 measures
   data/*.csv                      ← swap these for live extracts
-AIFinOps.Report/report.json
+  synonyms.linguistic.json        Q&A / Fabric Copilot synonyms (standalone, apply-on-demand)
+AIFinOps.Report/report.json       9 pages (4 original + 5 persona)
+platform/medallion/               Fabric bronze/silver/gold notebooks (→ the gold star)
+docs/ARCHITECTURE.md              decision record (rationale/tradeoffs/value/effort)
+docs/ai-insight-layer.md          Fabric Copilot + NL + RAG strategy
 data/                             raw Log Analytics exports (real Foundry)
 ```
 

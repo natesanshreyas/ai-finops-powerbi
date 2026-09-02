@@ -1,0 +1,29 @@
+{
+  "_comment": "Standalone Q&A / Fabric Copilot synonym artifact for AIFinOps.SemanticModel. NOT wired into the model definition (so it cannot affect whether the PBIP opens). Apply via Tabular Editor (paste into culture en-US linguisticMetadata) or Power BI Desktop > Modeling > Q&A setup > synonyms. Version mirrors the linguisticMetadata 1.0.0 shape so it can be lifted in with minimal edits.",
+  "Version": "1.0.0",
+  "Language": "en-US",
+  "DynamicImprovement": "HighConfidence",
+  "Entities": {
+    "fact_ai_usage.Total AI Cost":       { "Terms": [ {"total ai cost": {}}, {"ai spend": {}}, {"total spend": {}}, {"cost": {}} ] },
+    "fact_ai_usage.Discounted Cost":     { "Terms": [ {"discounted cost": {}}, {"net cost": {}}, {"cost after discount": {}} ] },
+    "fact_ai_usage.Forecast Cost (EOM)": { "Terms": [ {"forecast": {}}, {"projected cost": {}}, {"end of month cost": {}} ] },
+    "fact_ai_usage.Chargeback Cost":     { "Terms": [ {"chargeback": {}}, {"allocation": {}}, {"showback": {}} ] },
+    "fact_ai_usage.Chargeback Coverage %": { "Terms": [ {"chargeback coverage": {}}, {"allocated share": {}} ] },
+    "fact_ai_usage.Budget Variance":     { "Terms": [ {"budget variance": {}}, {"over budget": {}}, {"under budget": {}} ] },
+    "fact_ai_usage.Idle Licensed Users": { "Terms": [ {"idle users": {}}, {"unused licenses": {}}, {"unused seats": {}}, {"reclaimable seats": {}} ] },
+    "fact_ai_usage.Idle Seat Waste (monthly)": { "Terms": [ {"wasted spend": {}}, {"reclaimable spend": {}}, {"seat waste": {}} ] },
+    "fact_ai_usage.Total Tokens":        { "Terms": [ {"tokens": {}}, {"token consumption": {}}, {"token usage": {}} ] },
+    "fact_ai_usage.Cache Hit Rate":      { "Terms": [ {"cache hit rate": {}}, {"cached share": {}} ] },
+    "fact_ai_usage.Cost Confidence %":   { "Terms": [ {"cost confidence": {}}, {"billed share": {}}, {"how much is real": {}} ] },
+    "dim_business_unit":                 { "Terms": [ {"business unit": {}}, {"bu": {}}, {"department": {}}, {"division": {"State": "Generated"}} ] },
+    "dim_application":                   { "Terms": [ {"application": {}}, {"app": {}}, {"workload": {}} ] },
+    "dim_platform":                      { "Terms": [ {"platform": {}}, {"service": {}}, {"ai platform": {}} ] },
+    "dim_environment":                   { "Terms": [ {"environment": {}}, {"env": {}}, {"stage": {}} ] },
+    "dim_identity.identity_class":       { "Terms": [ {"principal type": {}}, {"identity type": {}}, {"human or service": {}} ] },
+    "dim_model":                         { "Terms": [ {"model": {}}, {"llm": {}}, {"foundation model": {}} ] }
+  },
+  "Relationships": {
+    "spend_by_bu":       { "Binding": {"ConceptualEntity": "fact_ai_usage"}, "Roles": {} },
+    "_note_relationships": "In production, add Q&A relationship phrasings (e.g. 'spend BY business unit', 'applications THAT increased cost') via the linguistic modelling UI; kept minimal here to stay schema-safe."
+  }
+}
