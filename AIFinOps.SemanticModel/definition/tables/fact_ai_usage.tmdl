@@ -201,8 +201,11 @@ table fact_ai_usage
 		)
 		formatString: #,0
 
+	/// Recoverable monthly spend from idle paid seats, priced at the seat_day rate only.
+	/// (Previously averaged the whole rate card incl. token micro-prices, understating waste ~1000x.)
 	measure 'Idle Seat Waste (monthly)' =
-		[Idle Licensed Users] * 30 * AVERAGE(dim_rate_card[unit_price_usd])
+		[Idle Licensed Users] * 30
+			* CALCULATE(AVERAGE(dim_rate_card[unit_price_usd]), dim_rate_card[unit_type] = "seat_day")
 		formatString: \$#,0.00
 
 	measure 'Error Rate' =
@@ -223,6 +226,69 @@ table fact_ai_usage
 		VAR D = COUNTROWS(VALUES(dim_date[date_key]))
 		RETURN DIVIDE([Total AI Cost], D) * 30
 		formatString: \$#,0.00
+
+	// ----------------------------------------------------------------- cost model
+	/// Actual cost after each platform's negotiated discount (dim_platform[enterprise_discount_pct]).
+	measure 'Discounted Cost' =
+		SUMX(
+			VALUES(dim_platform[platform_key]),
+			[Total AI Cost] * (1 - CALCULATE(SELECTEDVALUE(dim_platform[enterprise_discount_pct], 0)))
+		)
+		formatString: \$#,0.00
+
+	/// Savings unlocked by negotiated rates vs list. = Total AI Cost - Discounted Cost.
+	measure 'Discount Savings' = [Total AI Cost] - [Discounted Cost]
+		formatString: \$#,0.00
+
+	measure 'Cost MTD' = CALCULATE([Total AI Cost], DATESMTD(dim_date[date_key]))
+		formatString: \$#,0.00
+
+	/// Straight-line projection of the current month's MTD spend to month end.
+	measure 'Forecast Cost (EOM)' =
+		VAR LastDay = MAX(dim_date[date_key])
+		VAR DaysInMonth = DAY(EOMONTH(LastDay, 0))
+		VAR DaysElapsed = DAY(LastDay)
+		RETURN DIVIDE([Cost MTD], DaysElapsed) * DaysInMonth
+		formatString: \$#,0.00
+
+	/// 30-day forward projection at the trailing run-rate. Discounted basis.
+	measure 'Forecast Cost (next 30d, net)' =
+		VAR D = COUNTROWS(VALUES(dim_date[date_key]))
+		RETURN DIVIDE([Discounted Cost], D) * 30
+		formatString: \$#,0.00
+
+	// ----------------------------------------------------------------- chargeback
+	/// Spend that maps to a real business unit (excludes BU-UNALLOC). The directly billable pool.
+	measure 'Attributable Cost' =
+		CALCULATE([Total AI Cost], dim_business_unit[business_unit_key] <> "BU-UNALLOC")
+		formatString: \$#,0.00
+
+	measure 'Unallocated Cost' =
+		CALCULATE([Total AI Cost], dim_business_unit[business_unit_key] = "BU-UNALLOC")
+		formatString: \$#,0.00
+
+	/// Share of spend attributable to a business unit. The chargeback readiness number.
+	measure 'Chargeback Coverage %' = DIVIDE([Attributable Cost], [Total AI Cost])
+		formatString: 0.0%
+
+	/// Full allocation: a BU's direct spend plus its pro-rata share of unallocated spend.
+	measure 'Chargeback Cost' =
+		VAR Direct = [Attributable Cost]
+		VAR TotalAttrib = CALCULATE([Attributable Cost], ALL(dim_business_unit))
+		VAR Pool = CALCULATE([Unallocated Cost], ALL(dim_business_unit))
+		RETURN Direct + Pool * DIVIDE(Direct, TotalAttrib)
+		formatString: \$#,0.00
+
+	// ----------------------------------------------------------------- budget
+	measure 'Monthly Budget' = SUM(dim_business_unit[monthly_budget_usd])
+		formatString: \$#,0
+
+	/// Projected month-end spend vs budget. Positive = over budget.
+	measure 'Budget Variance' = [Forecast Cost (EOM)] - [Monthly Budget]
+		formatString: +\$#,0;-\$#,0;\$0
+
+	measure 'Budget Variance %' = DIVIDE([Forecast Cost (EOM)] - [Monthly Budget], [Monthly Budget])
+		formatString: +0.0%;-0.0%;0.0%
 
 	partition fact_ai_usage = m
 		mode: import

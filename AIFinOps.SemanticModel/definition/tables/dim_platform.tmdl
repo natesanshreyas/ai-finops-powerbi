@@ -42,12 +42,19 @@ table dim_platform
 		summarizeBy: none
 		sourceColumn: data_source
 
+	/// MOCK negotiated discount off list (EA / volume tier / credit pack). Overwrite per contract.
+	column enterprise_discount_pct
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: enterprise_discount_pct
+
 	partition dim_platform = m
 		mode: import
 		source =
 			let
 				Src = Csv.Document(File.Contents(DataFolder & "dim_platform.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
 				Hdr = Table.PromoteHeaders(Src, [PromoteAllScalars=true]),
-				Typed = Table.TransformColumnTypes(Hdr, {{"platform_key", type text}, {"platform_name", type text}, {"billing_model", type text}, {"native_unit", type text}, {"has_token_telemetry", type logical}, {"has_native_cost", type logical}, {"is_variable_cost", type logical}, {"data_source", type text}})
+				Typed = Table.TransformColumnTypes(Hdr, {{"platform_key", type text}, {"platform_name", type text}, {"billing_model", type text}, {"native_unit", type text}, {"has_token_telemetry", type logical}, {"has_native_cost", type logical}, {"is_variable_cost", type logical}, {"data_source", type text}, {"enterprise_discount_pct", type number}})
 			in
 				Typed

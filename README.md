@@ -25,7 +25,7 @@ python3 build_data.py        # regenerate CSVs
 
 > If Desktop rejects `report.json`, delete it and reopen the `.pbip`. Desktop regenerates a
 > blank report bound to the same semantic model and you drag the measures on. The semantic
-> model is the durable artifact — 7 tables, 5 relationships, 27 measures.
+> model is the durable artifact — 10 tables, 8 relationships, 39 measures.
 
 ---
 
@@ -80,6 +80,12 @@ Key measures: `Total AI Cost`, `Billed Cost`, `Modelled Cost`, **`Cost Confidenc
 `Fixed Cost`, `Variable Cost`, `Total Tokens`, `Cache Hit Rate`, `Cost per 1K Tokens`,
 `Copilot Credits`, `Premium Requests`, **`Idle Licensed Users`**, `Idle Seat Waste (monthly)`,
 `Cost per Active User`, `MoM Cost Delta %`.
+
+**Cost-model measures (v2):** `Discounted Cost`, `Discount Savings` (per-platform
+negotiated rates), `Forecast Cost (EOM)`, `Forecast Cost (next 30d, net)`,
+`Attributable Cost`, `Unallocated Cost`, **`Chargeback Coverage %`**, `Chargeback Cost`
+(direct + pro-rata unallocated), `Monthly Budget`, `Budget Variance`, `Budget Variance %`.
+These answer actual / discounted / forecast / chargeback for the CFO persona.
 
 ### Pages
 1. **Spend Overview** — total, fixed vs variable, confidence, platform capability matrix
@@ -191,7 +197,7 @@ build_report.py                   → 4-page report layout
 AIFinOps.pbip                     open this
 AIFinOps.SemanticModel/
   definition/model.tmdl           relationships + DataFolder parameter
-  definition/tables/*.tmdl        7 tables, 27 measures
+  definition/tables/*.tmdl        10 tables, 39 measures
   data/*.csv                      ← swap these for live extracts
 AIFinOps.Report/report.json
 data/                             raw Log Analytics exports (real Foundry)
