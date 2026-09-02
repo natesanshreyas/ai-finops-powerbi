@@ -22,6 +22,9 @@ ref table dim_identity
 ref table dim_model
 ref table dim_cost_center
 ref table dim_rate_card
+ref table dim_business_unit
+ref table dim_application
+ref table dim_environment
 
 relationship rel_usage_date
 	fromColumn: fact_ai_usage.usage_date
@@ -42,3 +45,15 @@ relationship rel_usage_model
 relationship rel_usage_costcenter
 	fromColumn: fact_ai_usage.cost_center_key
 	toColumn: dim_cost_center.cost_center_key
+
+relationship rel_usage_businessunit
+	fromColumn: fact_ai_usage.business_unit_key
+	toColumn: dim_business_unit.business_unit_key
+
+relationship rel_usage_application
+	fromColumn: fact_ai_usage.application_key
+	toColumn: dim_application.application_key
+
+relationship rel_usage_environment
+	fromColumn: fact_ai_usage.environment_key
+	toColumn: dim_environment.environment_key

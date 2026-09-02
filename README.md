@@ -54,14 +54,27 @@ trend visuals are usable. Run `scripts/traffic.py` in the gateway repo for more 
 ```
                     dim_date ──┐
                 dim_platform ──┤
-                dim_identity ──┼──►  fact_ai_usage  (1,892 rows)
-                   dim_model ──┤     grain: date × platform × identity × model × unit_type
-             dim_cost_center ──┘
+                dim_identity ──┤   (universal identity: Human · ServicePrincipal ·
+                   dim_model ──┼──►  fact_ai_usage  (1,892 rows)   ManagedIdentity · Agent)
+             dim_cost_center ──┤     grain: date × platform × identity × model × unit_type
+            dim_business_unit ──┤
+              dim_application ──┤
+              dim_environment ──┘
                                      dim_rate_card  (disconnected — the input)
 ```
 
 **Grain:** one row per `usage_date × platform × identity × model × unit_type`.
 `unit_type` ∈ `token · copilot_credit · premium_request · seat_day · prompt`.
+
+**Conformed dimensions (v2).** `dim_business_unit`, `dim_application`, and
+`dim_environment` each join to the fact on a single key (clean star, no ambiguous
+paths). They unlock *spend by business unit / application / environment* and the
+CFO, App-Owner and Optimization personas. `dim_identity` carries a universal
+`identity_class` (Human · ServicePrincipal · ManagedIdentity · Agent · Application)
+because not every AI request maps to a person. Budgets, criticality and SLA tiers
+on these dims are **MOCK** (`is_mock` / `is_mock_budget` columns) — overwrite with
+customer values. Regenerate keys with `python3 build_dimensions.py` (additive; reads
+the CSVs as source of truth, never regenerates the model).
 
 Key measures: `Total AI Cost`, `Billed Cost`, `Modelled Cost`, **`Cost Confidence %`**,
 `Fixed Cost`, `Variable Cost`, `Total Tokens`, `Cache Hit Rate`, `Cost per 1K Tokens`,

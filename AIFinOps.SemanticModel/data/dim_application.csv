@@ -1,0 +1,9 @@
+application_key,application_name,application_type,owner_business_unit_key,owner_upn,default_environment_key,criticality,is_mock
+APP-CHECKOUT,Checkout Assistant,api,BU-RETAIL,robin.hale@contoso.com,ENV-PROD,High,FALSE
+APP-SEARCH,Product Search API,api,BU-DISCOVERY,sam.chen@contoso.com,ENV-PROD,High,FALSE
+APP-DSNB,Data Science Notebooks,notebook,BU-PLATFORM,jenny.oyelaran@contoso.com,ENV-DEV,Low,FALSE
+APP-MOBILE,Mobile Shopping Assistant,agent,BU-RETAIL,robin.hale@contoso.com,ENV-TEST,Medium,FALSE
+APP-M365,Microsoft 365 Copilot,copilot,BU-TECH,cio@contoso.com,ENV-PROD,Medium,TRUE
+APP-GHCP,GitHub Copilot,copilot,BU-TECH,cio@contoso.com,ENV-PROD,Medium,TRUE
+APP-STUDIO,Employee Support Agent,agent,BU-TECH,cio@contoso.com,ENV-PROD,Medium,TRUE
+APP-UNKNOWN,Unattributed Workload,unknown,BU-UNALLOC,,ENV-UNK,Unknown,FALSE

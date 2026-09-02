@@ -31,6 +31,24 @@ table fact_ai_usage
 		summarizeBy: none
 		sourceColumn: cost_center_key
 
+	column application_key
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: application_key
+
+	column environment_key
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: environment_key
+
+	column business_unit_key
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: business_unit_key
+
 	column unit_type
 		dataType: string
 		summarizeBy: none
@@ -212,6 +230,6 @@ table fact_ai_usage
 			let
 				Src = Csv.Document(File.Contents(DataFolder & "fact_ai_usage.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
 				Hdr = Table.PromoteHeaders(Src, [PromoteAllScalars=true]),
-				Typed = Table.TransformColumnTypes(Hdr, {{"usage_date", type date}, {"platform_key", type text}, {"identity_key", type text}, {"model_key", type text}, {"cost_center_key", type text}, {"unit_type", type text}, {"quantity", type number}, {"input_tokens", Int64.Type}, {"output_tokens", Int64.Type}, {"cached_tokens", Int64.Type}, {"requests", Int64.Type}, {"cost_usd", type number}, {"cost_is_estimated", type logical}, {"is_error", type text}, {"latency_ms", type number}})
+				Typed = Table.TransformColumnTypes(Hdr, {{"usage_date", type date}, {"platform_key", type text}, {"identity_key", type text}, {"model_key", type text}, {"cost_center_key", type text}, {"application_key", type text}, {"environment_key", type text}, {"business_unit_key", type text}, {"unit_type", type text}, {"quantity", type number}, {"input_tokens", Int64.Type}, {"output_tokens", Int64.Type}, {"cached_tokens", Int64.Type}, {"requests", Int64.Type}, {"cost_usd", type number}, {"cost_is_estimated", type logical}, {"is_error", type text}, {"latency_ms", type number}})
 			in
 				Typed

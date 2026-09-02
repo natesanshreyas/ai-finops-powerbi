@@ -1,0 +1,5 @@
+environment_key,environment_name,is_production,sla_tier
+ENV-PROD,Production,TRUE,Tier-1
+ENV-TEST,Test,FALSE,Tier-3
+ENV-DEV,Development,FALSE,Tier-3
+ENV-UNK,Unknown,FALSE,

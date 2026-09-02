@@ -1,0 +1,7 @@
+business_unit_key,business_unit_name,division,monthly_budget_usd,executive_owner,is_mock_budget
+BU-RETAIL,Retail,Commercial,28000,cfo-retail@contoso.com,TRUE
+BU-DISCOVERY,Discovery,Commercial,12000,cfo-discovery@contoso.com,TRUE
+BU-PLATFORM,Platform,Engineering,18000,cto@contoso.com,TRUE
+BU-TECH,Technology,Engineering,45000,cio@contoso.com,TRUE
+BU-INSURANCE,Insurance,Financial Services,22000,cfo-insurance@contoso.com,TRUE
+BU-UNALLOC,Unallocated,Unallocated,0,,TRUE
