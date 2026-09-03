@@ -216,6 +216,7 @@ AIFinOps.SemanticModel/
 AIFinOps.Report/report.json       10 pages (4 original + 5 persona + data spectrum)
 platform/medallion/               Fabric bronze/silver/gold notebooks (→ the gold star)
 docs/ARCHITECTURE.md              decision record (rationale/tradeoffs/value/effort)
+docs/extractable-fields.md        per-platform field catalog (M365/GHC/Studio/Foundry) + medallion verdict
 docs/ai-insight-layer.md          Fabric Copilot + NL + RAG strategy
 data/                             raw Log Analytics exports (real Foundry)
 ```
