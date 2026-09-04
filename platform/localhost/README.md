@@ -1,0 +1,38 @@
+# AI FinOps — Local Demo (no Fabric / no Power BI license)
+
+A self-contained mock-up of the **deployed** Fabric + Power BI end result, runnable
+entirely on `localhost`. Zero external dependencies (Python stdlib only). All data is
+**MOCK**, read from `AIFinOps.SemanticModel/data/*.csv` (the Gold star schema).
+
+## Run
+
+```bash
+python3 platform/localhost/app.py
+# then open http://localhost:8080
+```
+
+Set a different port with `PORT=9000 python3 platform/localhost/app.py`.
+
+## What it shows
+
+Five **persona dashboards** + a working **AI insight layer**:
+
+| Tab | Answers |
+|-----|---------|
+| CFO / Finance | Total spend, spend by BU, budget variance, forecast, fixed vs variable |
+| Governance | Spend by platform (with REAL/MOCK source honesty), model mix, human vs non-human identities, unallocated $ |
+| Engineering | Tokens, requests, errors, latency, per-model performance |
+| App Owner | Cost by application, app × model spend |
+| License Optimization | Idle licensed seats + reclaimable $ |
+| 🤖 Ask AI | Natural-language question → SQL → grounded answer over the Gold table |
+
+## The AI layer
+
+The **Ask AI** tab mocks Fabric Copilot / semantic-model Q&A — but runs 100% locally.
+Type a question (or click a suggestion). It routes intent → parameterized SQL over
+`fact_ai_usage` + dims, and returns the **answer**, the **SQL it ran** (auditable), and
+the **evidence rows**. Handles: business-unit ranking, idle licenses, cost by model /
+application / platform, fixed-vs-variable, and "where can we reduce spend".
+
+This is the demo to run when Fabric licensing is blocked: it makes the AI story tangible
+without a capacity, and everything lines up with the Power BI persona pages.
