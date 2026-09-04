@@ -26,6 +26,7 @@ import sqlite3
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 BRONZE = os.path.join(ROOT, "fabric", "bronze_out")
+GOLD = os.path.normpath(os.path.join(ROOT, "..", "AIFinOps.SemanticModel", "data"))
 DB = os.path.join(HERE, "finops.db")
 
 # (product, category, field, description, source, grain)
@@ -128,6 +129,24 @@ def build():
         n = load_csv(con, t, path)
         total += n
         print(f"  + {t:<34} {n:>5} rows")
+    print("\nGold star schema (fact + dims):")
+    gold_files = sorted(glob.glob(os.path.join(GOLD, "fact_ai_usage.csv"))
+                        + glob.glob(os.path.join(GOLD, "dim_*.csv")))
+    gold_n = 0
+    for path in gold_files:
+        t = os.path.splitext(os.path.basename(path))[0]
+        n = load_csv(con, t, path)
+        total += n
+        gold_n += 1
+        print(f"  + {t:<34} {n:>5} rows")
+    # convenience numeric view over the Gold fact
+    con.execute("DROP VIEW IF EXISTS gold")
+    con.execute(
+        "CREATE VIEW gold AS SELECT usage_date, platform_key, identity_key, model_key, "
+        "unit_type, CAST(cost_usd AS REAL) cost, CAST(quantity AS REAL) quantity, "
+        "CAST(requests AS REAL) requests, CAST(input_tokens AS REAL) input_tokens, "
+        "CAST(output_tokens AS REAL) output_tokens, CAST(latency_ms AS REAL) latency_ms, "
+        "is_error, application_key, environment_key, business_unit_key FROM fact_ai_usage")
     con.execute('DROP TABLE IF EXISTS extractable_data_catalog')
     con.execute("CREATE TABLE extractable_data_catalog "
                 "(product TEXT, category TEXT, field TEXT, description TEXT, source TEXT, grain TEXT)")

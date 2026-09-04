@@ -2,11 +2,17 @@
 
 A self-contained mock-up of the **deployed** Fabric + Power BI end result, runnable
 entirely on `localhost`. Zero external dependencies (Python stdlib only). All data is
-**MOCK**, read from `AIFinOps.SemanticModel/data/*.csv` (the Gold star schema).
+**MOCK**. The app reads from the portable data store `platform/data-store/finops.db`
+(Bronze + Gold + catalog) when present, and falls back to `AIFinOps.SemanticModel/data/*.csv`
+(the Gold star schema) otherwise — so the BI dashboards and the AI layer read from the
+**same source** the Fabric push (`load_bronze.py`) uses.
 
 ## Run
 
 ```bash
+# optional but recommended: (re)build the portable data store first
+python3 platform/data-store/build_store.py
+
 python3 platform/localhost/app.py
 # then open http://localhost:8080
 ```

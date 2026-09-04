@@ -8,6 +8,9 @@ One slice is real. Three are mocked. **Which is which is a first-class column in
 and modelled dollars is the single most important thing to be honest about in an AI FinOps
 conversation.
 
+> **Want the runnable demo (persona dashboards + AI layer, no Fabric/license)?**
+> See **[RUNBOOK.md](RUNBOOK.md)** — clone, run two commands, open http://localhost:8080.
+
 ---
 
 ## Quick start

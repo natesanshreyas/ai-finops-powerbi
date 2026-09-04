@@ -23,6 +23,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.normpath(os.path.join(HERE, "..", "..", "AIFinOps.SemanticModel", "data"))
+STORE_DB = os.path.normpath(os.path.join(HERE, "..", "data-store", "finops.db"))
 PORT = int(os.environ.get("PORT", "8080"))
 
 # Seat-based (license) platforms vs consumption platforms
@@ -49,11 +50,33 @@ def build_db():
     con = sqlite3.connect(":memory:", check_same_thread=False)
     con.row_factory = sqlite3.Row
     loaded = {}
-    for fn in os.listdir(DATA):
-        if fn.endswith(".csv"):
-            table = fn[:-4]
-            loaded[table] = _load_csv(con, table, os.path.join(DATA, fn))
+    source = None
+    # Prefer the portable data store (Bronze + Gold + catalog) if it exists,
+    # so the BI dashboards and AI layer read from the SAME source the Fabric
+    # push (load_bronze.py) uses. Fall back to the raw Gold CSVs otherwise.
+    if os.path.exists(STORE_DB):
+        src = sqlite3.connect(STORE_DB)
+        src.row_factory = sqlite3.Row
+        tables = [r[0] for r in src.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
+        for t in tables:
+            rows = src.execute(f'SELECT * FROM "{t}"').fetchall()
+            cols = [d[0] for d in src.execute(f'SELECT * FROM "{t}" LIMIT 1').description]
+            coldef = ", ".join(f'"{c}"' for c in cols)
+            con.execute(f'CREATE TABLE "{t}" ({coldef})')
+            ph = ", ".join("?" for _ in cols)
+            con.executemany(f'INSERT INTO "{t}" VALUES ({ph})', [tuple(r) for r in rows])
+            loaded[t] = len(rows)
+        src.close()
+        source = "finops.db (portable data store: Bronze + Gold)"
+    else:
+        for fn in os.listdir(DATA):
+            if fn.endswith(".csv"):
+                table = fn[:-4]
+                loaded[table] = _load_csv(con, table, os.path.join(DATA, fn))
+        source = "AIFinOps.SemanticModel/data/*.csv (Gold)"
     # numeric cost view for convenience
+    con.execute("DROP VIEW IF EXISTS gold")
     con.execute(
         "CREATE VIEW gold AS SELECT usage_date, platform_key, identity_key, "
         "model_key, unit_type, CAST(cost_usd AS REAL) AS cost, "
@@ -65,6 +88,7 @@ def build_db():
         "FROM fact_ai_usage"
     )
     con.commit()
+    loaded["__source__"] = source
     return con, loaded
 
 
