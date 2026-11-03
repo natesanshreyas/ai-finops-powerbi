@@ -3,36 +3,373 @@
 A working Power BI Project (PBIP) showing unified AI spend across **Microsoft 365 Copilot**,
 **Copilot Studio**, **GitHub Copilot Enterprise**, and **Azure AI Foundry**.
 
-One slice is real. Three are mocked. **Which is which is a first-class column in the model**
-(`dim_platform[data_source]`) rather than a footnote, because the difference between billed
-and modelled dollars is the single most important thing to be honest about in an AI FinOps
-conversation.
+Some slices are real, some are modelled. **Which is which is a first-class column in the
+model** (`dim_platform[data_source]`) rather than a footnote, because the difference between
+billed and modelled dollars is the single most important thing to be honest about in an AI
+FinOps conversation. In this fork that column is *derived* from the bronze lineage, so the
+label always follows the data.
 
 > **Want the runnable demo (persona dashboards + AI layer, no Fabric/license)?**
 > See **[RUNBOOK.md](RUNBOOK.md)** — clone, run two commands, open http://localhost:8080.
+
+![Spend Overview — the 8-page Direct Lake report running in the Fabric service](docs/images/report-spend-overview.png)
+
+---
+
+## What this fork adds
+
+This is a fork of [`natesanshreyas/ai-finops-powerbi`](https://github.com/natesanshreyas/ai-finops-powerbi).
+Upstream proves the *shape* of the model against a mock feed plus one real Foundry
+slice. This fork wires a **live Azure / Graph / Dataverse extract path** alongside
+that mock feed and runs the whole thing on **Direct Lake in Fabric**, so the report
+shows genuinely invoiced AI spend beside modelled spend — with provenance still
+derived from the data rather than hand-written.
+
+Verified end to end against a live tenant: **$5,809.81** of invoiced Azure spend over
+91 days, 694 Entra identities, 144 applications, 8 Copilot Studio agents.
+
+**Real and mock never share a lakehouse.** The separation is physical, not a column
+filter, so "which of these numbers is real" is answered by pointing at storage:
+
+```
+bronze       (MOCK)  ─┐
+                      ├─►  silver  ─►  gold  ─►  Direct Lake model ─► 8-page report
+bronze_real  (REAL)  ─┘
+```
+
+Silver unions both and carries `_data_class` per row; gold derives
+`dim_platform[data_source]` from it, so the Governance page relabels itself with no
+code change the moment a mock feed is replaced by a real one.
+
+Two new platforms, deliberately **not** collapsed into one "Azure" bucket:
+
+| Platform | What it is |
+|---|---|
+| `AzureAI` | Cognitive Services / AI Foundry / ML meters — AI spend proper |
+| `AzureInfra` | The storage, search, database and network tier those workloads run on |
+
+Merging them overstates AI platform spend; dropping `AzureInfra` understates what the
+workloads actually cost. Both are wrong, so the model reports them side by side and
+lets the reader choose the denominator.
+
+### Two silent-failure bugs worth knowing about
+
+Both returned HTTP 200 and plausible-looking data, so neither surfaced as an error.
+
+1. **`usageDetails` ignores an OData `$filter` on dates.** It returns only the open
+   billing period — 8 days instead of the 91 requested. The dedicated `startDate` /
+   `endDate` parameters *are* honoured. The extractor now prints the day count and
+   warns when the window looks truncated.
+2. **Append-and-dedupe double-counted restated cost.** Azure revises recent usage, so
+   a restated row differs in `cost_usd`, fails to match the row it supersedes, and both
+   survive. Observed live at \$5,838.74 against a true \$5,809.81. Now keyed on
+   grain-minus-measures with newest-wins, which reconciles exactly and makes
+   re-extraction idempotent.
+
+### A finding worth surfacing, not hiding
+
+Chargeback coverage drops from 94% to **~46%** under real data. That is not a
+regression: the Azure resources carry no owning-BU tag, so real spend routes to
+`BU-UNALLOC`. An unattributable majority of real AI spend is precisely what this
+accelerator exists to make visible.
+
+### Azure cost now comes from a FOCUS export, not `usageDetails`
+
+The Azure billing feed has been replaced. Cost Management writes a **FOCUS**
+Parquet export into an ADLS Gen2 account in the customer's own subscription; a
+OneLake shortcut surfaces it in `bronze_real` with **zero copy**, and
+`03_ingest_azure_costmgmt_focus.py` materialises it as the Delta table
+`bronze_azure_cost_focus`. Silver prefers that table over the legacy
+`usageDetails` extract whenever it exists, and falls back otherwise — only one of
+the two is ever read, so Azure cost cannot double-count across them.
+
+Why FOCUS rather than more `usageDetails`:
+
+| | |
+|---|---|
+| **Four cost measures, not one** | `BilledCost`, `EffectiveCost`, `ListCost`, `ContractedCost` arrive as separate columns, so list-vs-contracted is data instead of an assumption. `silver_azure_cost_detail` keeps all four. |
+| **Vendor-neutral** | FOCUS is the FinOps Foundation's open spec, so an AWS or GCP export conforms through the same silver branch. |
+| **The spec classifies the workload** | `ServiceCategory` drives the `AzureAI` / `AzureInfra` split, replacing string-matching on ARM resource ids. |
+| **Zero copy** | Storage stays in the customer's subscription; they keep retention and control of the raw extract. |
+
+**FOCUS version:** the current Microsoft dataset is **`1.2-preview`**, not the
+`1.0` this fork was first built against. 1.2-preview promotes several
+vendor-prefixed 1.0 columns to standard names — `x_InvoiceId` → `InvoiceId`,
+`x_PricingCurrency` → `PricingCurrency`, `x_SkuMeterName` → `SkuMeter` — and drops
+the old spelling, so a model wired to 1.0 column names throws `AnalysisException`
+against a 1.2-preview export. `10_conform_usage.py` now picks each FOCUS column by
+**presence first** (its `focus_col` helper) so it tolerates *either* schema, then
+coalesces the survivors for per-row nulls; the `ListCost` it carries feeds the new
+`list_cost_usd` / `has_rate_card` columns described below.
+
+Verified live: **79,426 FOCUS rows / \$7,048.73** billed Azure spend over
+2026-06-01 → 2026-09-17, flowing into `fact_ai_usage` (81,172 rows, \$12,818.69)
+and reconciling exactly — `AzureInfra` \$6,342.24 + `AzureAI` \$706.49 =
+\$7,048.73, at 100% cost confidence on both.
+
+Stand it up with `platform/deploy/create_cost_export.py` (Azure side) and
+`platform/deploy/create_onelake_shortcut.py` (Fabric side); both support
+`--dry-run`.
+
+### A third silent-failure bug, same family as the two above
+
+**De-duplicating FOCUS on a composed row key silently deletes cost.** Keying on
+resource + meter + charge period looks obviously correct and is not: FOCUS
+legitimately emits many rows sharing those values (different pricing tiers, tags
+and SKU details). Measured on this data it dropped **~75% of rows and 30% of the
+cost** — \$7,048.73 down to \$4,919.71 — with no error and a plausible-looking
+total. Export overlap is real and must be resolved at **period** level instead:
+newest run wins per `(export, period)`, then one export wins wholesale per month.
+That is what `03_ingest_azure_costmgmt_focus.py` does, in bronze, before silver
+sees a row.
 
 ---
 
 ## Quick start
 
 ```bash
-git clone https://github.com/natesanshreyas/ai-finops-powerbi.git
+git clone https://github.com/alipouw13/ai-finops-powerbi.git
 cd ai-finops-powerbi
-python3 build_data.py        # regenerate CSVs
+
+# point the model's DataFolder parameter at this clone, then check the model
+python platform/validate/validate_pbip.py --fix-data-folder
 ```
 
 1. Open `AIFinOps.pbip` in **Power BI Desktop** (Dec 2023+, with *Preview → Power BI Project* on).
-2. **Transform data → Manage Parameters → `DataFolder`** — set to the absolute path of
-   `AIFinOps.SemanticModel/data/` (trailing slash, escaped backslashes on Windows).
-3. **Refresh.**
+2. **Refresh.** (`--fix-data-folder` already set the `DataFolder` parameter; you can also set
+   it by hand via *Transform data → Manage Parameters → `DataFolder`* — absolute path to
+   `AIFinOps.SemanticModel/data/`, trailing separator included.)
+
+`validate_pbip.py` checks the whole PBIP offline — CSV headers against every TMDL
+`sourceColumn`, declared data types against the actual values, relationship keys for
+uniqueness and orphans, all 57 DAX measures, and all 114 report field bindings. Run it
+after changing any CSV or measure; it catches the failures that otherwise surface only as
+a refresh error or a silently blank visual.
+
+If you are working on the Fabric medallion notebooks, also run:
+
+```bash
+python platform/validate/check_notebooks.py
+```
+
+It catches the PySpark trap where a column name collides with a DataFrame member
+(`resolve.alias` returns the bound *method*, and the join dies 40 seconds into a
+remote Spark run), and verifies the gold table contracts still match the CSV
+headers column-for-column.
+
+### Publishing to Fabric / Direct Lake
+
+The PBIP is an **import** model reading local CSVs, which is what lets it open
+with no Fabric dependency. For the service, generate a separate Direct Lake model
+over the gold Lakehouse — `AIFinOps.pbip` is never modified:
+
+```bash
+python platform/validate/build_directlake.py \
+    --workspace <workspace-guid> --lakehouse <gold-lakehouse-guid>
+python platform/deploy/deploy_semantic_model.py \
+    --workspace <workspace-guid> --model-dir AIFinOps.DirectLake.SemanticModel
+```
+
+> The committed `AIFinOps.DirectLake.*` folders are **build outputs**, so the
+> OneLake path in `model.tmdl` and the dataset id in `definition.pbir` point at
+> the environment they were generated in. They are resource locators, not
+> secrets — access is still gated by Entra — but they will not resolve for you.
+> Re-run the two generators above with your own GUIDs before deploying.
+
+> `deploy_semantic_model.py` **reframes the model on every deploy** (it now calls
+> the dataset refresh after `updateDefinition` and polls it to completion). This is
+> deliberate, not optional: Direct Lake maps *rows* with no refresh, but a **newly
+> declared column stays unmapped until the model reframes**, so a schema change that
+> skips the reframe ships measures that fail at query time. See finding 4 below.
+
+### The Fabric report
+
+`build_report_directlake.py` generates the **8-page** report defined in the
+repo specification above, bound live to the Direct Lake dataset — deep-indigo
+canvas, gradient KPI strip, white rounded content cards, right-hand filter rail:
+
+```bash
+python platform/validate/build_report_directlake.py --dataset <dataset-guid>
+python platform/validate/check_report.py --report AIFinOps.DirectLake.Report \
+    --blank "M365 Prompts" "Error Rate"
+python platform/deploy/deploy_report.py \
+    --workspace <workspace-guid> --report-dir AIFinOps.DirectLake.Report
+```
+
+`check_report.py` is the gate. It fails the build on:
+- any two visuals on a page whose rectangles intersect, or anything off-canvas
+- a projection `queryRef` with no matching entry in the visual's
+  `prototypeQuery.Select` (the visual renders its title and stays permanently
+  blank — no error anywhere)
+- a binding to a table/column/measure that does not exist, including a measure
+  bound to the wrong table (the catalogue measures live on `dim_data_source`,
+  not the fact)
+- a binding to a measure passed via `--blank`, i.e. one known to return no data
+  on this dataset, so empty cards can never ship
+- title/background colour pairs below the WCAG AA 4.5:1 contrast minimum
+- a slicer that is not `data.mode = "Dropdown"`, or shorter than 64px. Note
+  `general.orientation` looks like the right property but only enumerates
+  `VerticalList` / `HorizontalList` — it accepts a dropdown value and **silently
+  ignores it**, which is exactly the class of failure this gate exists to catch
+
+Two measures are legitimately blank and are excluded by design:
+`[M365 Prompts]` (Graph exposes activity dates, never prompt counts) and
+`[Error Rate]`. `[Error Rate]`'s original justification — Azure Monitor metrics
+carry no per-request error flag — holds only for the **metrics fallback** path; the
+newer `bronze_foundry_gateway` feed *does* carry a real per-request status
+(`status_code` / `is_error`), so on gateway-fronted Foundry traffic the measure is
+meaningful. It is kept out of the report and passed to `--blank` **by choice**, not
+because the data is always absent — see finding 5 below for the `is_error` trap that
+made it dangerous to bind before silver normalised the type.
+
+See [platform/medallion/README.md](platform/medallion/README.md) for the full
+pipeline and the three TMDL traps that break publishing (Desktop accepts them,
+Fabric does not — including one that silently broke 21 of the 42 measures).
+
+### Two more silent-failure bugs, surfaced deploying to Fabric (four and five)
+
+Both are the same shape as the first three: an HTTP 200, a plausible-looking
+result, and a number that is quietly wrong.
+
+4. **"Direct Lake needs no refresh" is true for data and false for schema.**
+   `deploy_semantic_model.py` returned 200, printed *"definition replaced"*, and the
+   model looked deployed — but `Rate Card Cost` and `Rate Card Coverage %` rendered
+   as blank cards in the service. The columns they reference (`list_cost_usd`,
+   `has_rate_card`) were **newly declared** in the TMDL, and a Direct Lake model does
+   not map a newly declared column until it **reframes**: the table still binds, the
+   column is simply absent, and any measure over it fails at query time with `The
+   value for 'list_cost_usd' cannot be determined`. Nothing errors at deploy time,
+   and every *other* new measure worked — which is exactly what hid it. The deploy
+   script now calls `reframe()` unconditionally after `updateDefinition` and polls the
+   refresh to completion. Note the refresh lives on the **Power BI REST surface**
+   (`api.powerbi.com/v1.0/myorg/groups/{ws}/datasets/{ds}/refreshes`), not the Fabric
+   one, so it needs a second token audience (`https://analysis.windows.net/powerbi/api`).
+   The accurate rule is **no gateway, and no refresh for new rows — but a schema
+   change requires a reframe.**
+
+5. **`inferSchema` types a bronze column differently per feed, and the obvious cast
+   makes it worse.** The new `bronze_foundry_gateway` feed writes `is_error` as
+   `True`/`False`, so the bronze loader's `inferSchema` lands it as a **BOOLEAN**,
+   while the silver `USAGE_CONTRACT` declares `is_error` as a **STRING**. Coalescing a
+   boolean against a string literal killed the whole conform with
+   `DATATYPE_MISMATCH.DATA_DIFF_TYPES` — loud, so *not* the trap. The trap is the fix
+   that runs clean: `F.col("is_error").cast("string")` renders a Spark boolean as
+   lowercase `'true'`/`'false'`, which never matches `[Error Rate]`'s
+   `is_error = "True"`, so the measure would read **0% forever** with no error
+   anywhere. Silver now normalises explicitly —
+   `when(coalesce(is_error.cast("boolean"), false), "True").otherwise("False")` —
+   rather than a bare cast, so both the boolean-typed gateway feed and the
+   string-typed feeds land on the same `"True"`/`"False"` the measure expects.
+
+### Pulling real tenant data
+
+`extract_real_bronze.py` reads live Azure, Graph, Power Platform and Dataverse
+surfaces and writes REAL bronze CSVs. It is **read-only** and refuses to write
+without an explicit acknowledgement flag; its output directory is gitignored.
+
+```bash
+az login --tenant <tenant-id>
+
+# report what is available and write nothing
+python platform/fabric/extract_real_bronze.py --probe
+
+# actually extract (writes to the gitignored platform/fabric/bronze_real/)
+python platform/fabric/extract_real_bronze.py \
+    --i-understand-this-is-real-tenant-data
+
+# land it in its own lakehouse, then run silver + gold over both bronzes
+python platform/deploy/fabric_deploy.py \
+    --steps workspace lakehouse upload upload-real notebooks run \
+    --workspace             <workspace-guid> \
+    --lakehouse             <bronze-guid> \
+    --lakehouse-bronze-real <real-bronze-guid-or-name> \
+    --lakehouse-silver      <silver-guid> \
+    --lakehouse-gold        <gold-guid>
+```
+
+What it collects, and the honest limits of each:
+
+| Table | Source | Notes |
+|---|---|---|
+| `bronze_azure_cost` | Consumption `usageDetails` | Invoiced spend, per resource per day. Aggregated to the declared grain with `line_item_count` kept, so re-extraction is idempotent |
+| `bronze_ref_identity_map` | Graph `/users` + `/servicePrincipals` | Real names. No Entra source for BU or cost centre, so those stay blank and route to the Unallocated members |
+| `bronze_ref_app_inventory` | Resource Graph + the cost rows | Every resource that *is* an AI account or *incurred* cost, so real spend attributes to a real workload instead of `APP-UNKNOWN` |
+| `bronze_azure_ai_metrics` | Azure Monitor | Token metrics only populate for token-billed traffic |
+| `bronze_ref_agent_inventory` | Dataverse `bots` | Copilot Studio agents per environment |
+| `bronze_studio_credits` | Dataverse `msdyn_aievent` | The table the admin centre bills from. `msdyn_creditconsumed` is already net of zero-rating, so it is used directly and never modelled up from session counts |
+
+Two deliberate choices worth calling out:
+
+- **Enumerate Azure AI accounts via Resource Graph, not per-subscription.** The
+  per-subscription listing returned 0 accounts where Resource Graph returned 16.
+- **Dataverse reports credits, never dollars.** Those rows are priced from the rate
+  card and marked `cost_is_estimated = True`, so a modelled number can never
+  masquerade as invoiced spend.
+
+### Generating real Copilot Studio usage
+
+`msdyn_aievent` — the table the Power Platform admin centre bills from — stays
+empty until an agent is actually run. No API can extract spend that was never
+incurred, so `generate_studio_traffic.py` drives **published** agents over the
+Copilot Studio conversations API and lets the extractor pick up the result.
+
+```bash
+# one-time: app registration + admin consent + device-code sign-in
+python platform/fabric/generate_studio_traffic.py --setup
+
+python platform/fabric/generate_studio_traffic.py --list
+python platform/fabric/generate_studio_traffic.py --conversations 6 --turns 8
+```
+
+The setup step exists because the Azure CLI **cannot** be used here. Asking for
+`CopilotStudio.Copilots.Invoke` with the CLI's client id returns
+`AADSTS65002: … must be configured via preauthorization`, and only Microsoft — as
+the API owner — can preauthorise a first-party client. A tenant-owned app
+registration has no such restriction. App-only (client-credentials) tokens are
+issued but then rejected by the service with `405 App-only S2S access is not
+enabled for this environment`, so the flow is delegated, which also keeps the
+events attributable to a real user.
+
+> Copilot Studio credit telemetry is a **billing** surface, not a live trace, so
+> `msdyn_aievent` can lag by up to ~24h after the traffic run. The collector is
+> already wired — re-running the extractor after the lag window is all it takes.
+
+### Running this on a schedule
+
+Everything above runs interactively on `az login` tokens, which is right for a
+laptop and wrong for production. **[docs/production-ingestion-architecture.md](docs/production-ingestion-architecture.md)**
+covers the production design: why the pipeline **Webhook activity is the wrong
+tool** (it blocks waiting for a callback nothing sends) and the Web activity's
+4 MB response cap rules it out for a 61,340-row cost feed, why Azure cost should
+use a native **Cost Management Export + OneLake shortcut** instead of API calls
+at all, the service-principal and Key Vault identity model, a full
+**least-privilege permissions matrix** per source, and a setup runbook.
+
+### Regenerating the CSVs
+
+`build_data.py` emits only the base star schema. The conformed dimensions, the universal
+identity columns and `dim_platform[enterprise_discount_pct]` are added by
+`build_dimensions.py`, and the semantic model requires all of them — so the two always run
+as a pair, in this order:
+
+```bash
+python build_data.py         # base CSVs from the real gateway export + mock platforms
+python build_dimensions.py   # additive: conformed dims, identity columns, discounts
+python platform/validate/validate_pbip.py    # confirm the model still binds
+```
+
+> Running `build_data.py` on its own leaves the model unrefreshable: seven columns the TMDL
+> declares no longer exist in the CSVs.
 
 > If Desktop rejects `report.json`, delete it and reopen the `.pbip`. Desktop regenerates a
 > blank report bound to the same semantic model and you drag the measures on. The semantic
-> model is the durable artifact — 11 tables, 8 relationships, 42 measures.
+> model is the durable artifact — 11 tables, 8 relationships, 57 measures.
 
 ---
 
 ## Data provenance — read this before demoing
+
+### Upstream PBIP (import model, `AIFinOps.pbip`)
 
 | Platform | Source | Status |
 |---|---|---|
@@ -50,15 +387,39 @@ identity dimension at all.
 All real rows land on `2026-08-07` (one load-test day). Mocked platforms span 60 days so the
 trend visuals are usable. Run `scripts/traffic.py` in the gateway repo for more real days.
 
+### This fork (Direct Lake, blended real + mock)
+
+Measured over a 91-day window in a live tenant. Every label below is **derived** from
+the bronze `_data_class` column, not typed in by hand:
+
+| Platform | Status | Notes |
+|---|---|---|
+| **Azure AI Supporting Infrastructure** | ✅ **REAL** | Invoiced Azure meters — storage, search, database, network |
+| **Azure AI Services (invoiced)** | ✅ **REAL** | Invoiced Cognitive Services / AI Foundry / ML meters |
+| Azure AI Foundry (tokens) | ⚠️ MOCK | The tenant's 6 active AI resources emit ~3,900 calls but **zero tokens** — they are Content Understanding / Doc Intelligence / Speech / Translation, which bill *per call*. The 3 `OpenAI`-kind resources have no traffic |
+| Microsoft Copilot Studio | ⚠️ MOCK | Collector is wired and `msdyn_aievent` is readable, but **7 of 8 agents are unpublished and none have ever run** — so there is genuinely no consumption to report |
+| Microsoft 365 Copilot | ⚠️ MOCK | No `Microsoft_365_Copilot` SKU in the tenant |
+| GitHub Copilot Enterprise | ⚠️ MOCK | No org access |
+
+Because real cost is *invoiced*, `Cost Confidence %` reads **100%** for both Azure
+platforms and blended ~86% overall. Page 2 (Engineering Tokenomics) — which now
+covers both Azure AI Foundry and Azure OpenAI on one page — stays MOCK by
+necessity, and the Governance page says so rather than hiding it.
+
+See [docs/real-data-spec.md](docs/real-data-spec.md) for the full availability matrix,
+the collector specs, and the API traps behind each one.
+
 ---
 
 ## Model
+
+![The star schema — eight dimensions on a single fact, no ambiguous paths](docs/images/model-star-schema.png)
 
 ```
                     dim_date ──┐
                 dim_platform ──┤
                 dim_identity ──┤   (universal identity: Human · ServicePrincipal ·
-                   dim_model ──┼──►  fact_ai_usage  (1,892 rows)   ManagedIdentity · Agent)
+                   dim_model ──┼──►  fact_ai_usage  (2,057 rows)   ManagedIdentity · Agent)
              dim_cost_center ──┤     grain: date × platform × identity × model × unit_type
             dim_business_unit ──┤
               dim_application ──┤
@@ -90,22 +451,46 @@ negotiated rates), `Forecast Cost (EOM)`, `Forecast Cost (next 30d, net)`,
 (direct + pro-rata unallocated), `Monthly Budget`, `Budget Variance`, `Budget Variance %`.
 These answer actual / discounted / forecast / chargeback for the CFO persona.
 
+**Rate-card, seat-action and attribution measures (this change):** `Rate Card Cost`
+and `Rate Card Coverage %` (list/rate-card spend, driven by the new
+`fact_ai_usage[list_cost_usd]` / `[has_rate_card]` columns — Azure rows take list
+cost from FOCUS `ListCost`, other platforms price from `dim_rate_card`, falling back
+to `cost_usd` when no rate exists); `Cowork Credits` and `Cowork Add-on Cost` (the
+M365 Copilot Cowork consumptive add-on, billed in Copilot Credits — see the
+rationalization notes below); `Seat Utilisation %`, `Low-Use Licensed Seats`,
+`Downgrade Candidate Spend (monthly)` and the per-identity text measure `Seat Action`
+(reclaim / review / healthy / no seat); `Unattributed Requests`, `Attributed
+Requests`, `Unattributed Request %`, `Unattributed Workload Cost` and `Workload
+Attribution %` (the honest attribution counters behind pages 3 and 7); and
+`Budgeted Business Units` / `Budget Coverage %`. The model now carries **57
+measures** in total.
+
 ### Pages
-1. **Spend Overview** — total, fixed vs variable, confidence, platform capability matrix
-2. **Foundry Tokenomics** — the only real tokenomics; in/out/cached, cache hit rate, $/1K
-3. **Waste & Utilisation** — idle seats and recoverable spend
-4. **Rate Card** — the editable input, plus billed-vs-modelled by platform
+The report is **8 pages**. Pages 1–4 are built by `build_report.py`; pages 5–8 are
+appended additively by `build_personas.py`.
+1. **Spend Overview** — total, fixed vs variable, confidence, platform capability
+   matrix (now showing `native_unit`, `addon_unit` and the `Cowork Add-on Cost`)
+2. **Engineering Tokenomics** — token, request and latency economics across **both**
+   Azure AI Foundry and Azure OpenAI on one page; Platform / Provider / Model slicers
+   switch between them (merges the old *Foundry Tokenomics* and *Engineering* pages)
+3. **Licence Seats, Waste & Utilisation** — idle seats, recoverable spend, seat-action
+   queue and utilisation; the per-user visual is filtered to known identities and the
+   unattributed volume is surfaced separately (merges the old *Waste & Utilisation* and
+   *License Optimization* pages)
+4. **Rate Card** — the editable input, plus `Billed Cost` vs `Rate Card Cost` by
+   platform so every platform shows both bars
+5. **CFO Finance** — spend, discounts, forecast, budget variance, chargeback by BU
+   (demo budgets flagged with `is_mock_budget`)
+6. **Governance** — adoption by principal type, platform usage, REAL-vs-MOCK risk
+   register, Cowork add-on billed cost
+7. **Application Owner** — spend by application, `Workload Attribution %`, trend, MoM
+   delta, criticality
+8. **Extractable Data Spectrum** — full catalogue of every AI cost signal per platform
+   (source API, identity grain, cost fidelity) and its status: REAL / AVAILABLE / MOCK / ROADMAP
 
-**Persona pages (v2)** — one page per stakeholder, built on the conformed dims:
-5. **CFO — Finance** — spend, discounts, forecast, budget variance, chargeback by BU
-6. **Governance** — adoption by principal type, platform usage, REAL-vs-MOCK risk register
-7. **Engineering** — token consumption, unit economics by model, latency, error rate (Foundry REAL)
-8. **Application Owner** — spend by application, trend, MoM delta, criticality
-9. **License Optimization** — idle licensed users, reclaimable spend, seat utilisation
-10. **Extractable Data Spectrum** — full catalogue of every AI cost signal per platform (source API, identity grain, cost fidelity) and its status: REAL / AVAILABLE / MOCK / ROADMAP
-
-Persona pages are (re)generated additively by `python3 build_personas.py`, which
-preserves pages 1–4 and only touches sections named `PERSONA_*` / `DATA_SPECTRUM`.
+The old standalone **Engineering** and **License Optimization** pages are deleted;
+their content folds into pages 2 and 3. `build_personas.py` preserves pages 1–4 and
+only touches sections named `PERSONA_*` / `DATA_SPECTRUM`.
 
 ---
 
@@ -174,7 +559,27 @@ Copilot Studio agents on your own Foundry deployment are billed **separately** �
 rates *"exclude bring-your-own-model configurations, including Azure Foundry models."* That
 usage appears in Foundry cost, not credits. Summing both naively double-counts.
 
-### 7. Don't model Copilot Studio credits from activity counts
+### 7. Don't double-count Copilot Credits — Cowork bills as `Microsoft Copilot Studio`
+
+Microsoft 365 Copilot **Cowork** (GA June 2026) is not a second seat SKU. It needs an
+existing M365 Copilot licence **plus** usage-based billing, granted by a *spending
+policy*, and it is metered in **Copilot Credits at \$0.01 each** — the same currency
+Copilot Studio already uses. There is no "Cowork unit"; the billing unit is the Copilot
+Credit. In this model Cowork lands as `unit_type = "copilot_credit"` on
+`platform_key = "M365Copilot"`, surfaced by `Cowork Credits` and `Cowork Add-on Cost`,
+and because it is *consumptive* it sits inside `Variable Cost`, **not** `Fixed Cost`.
+
+The trap: on the Azure bill, Cowork, Copilot Studio **and** Work IQ credits are all
+billed through a **single Azure service labelled `Microsoft Copilot Studio`** — there is
+no separate Cowork line item. Ingesting *both* the M365 credit export and the
+Azure/FOCUS rows for that service counts the same dollars twice, in exactly the same
+silent way as summing a bring-your-own-model deployment on both sides. `10_conform_usage.py`
+guards this: its FOCUS branch **excludes** the `Microsoft Copilot Studio` service from
+`silver_usage_azure` (printing the amount it drops) and treats the M365 credit feed as
+authoritative — which also matters because prepaid **capacity-pack draw-down is invisible
+in Azure Cost Management**, so an Azure-only model under-counts prepaid consumption.
+
+### 8. Don't model Copilot Studio credits from activity counts
 
 M365 Copilot–licensed users are **zero-rated** for classic answers, generative answers, agent
 actions, tenant graph grounding, and agent flows. Identical activity costs 0 or 12 credits
@@ -190,7 +595,7 @@ depending purely on the invoker's licence. `msdyn_creditconsumed` is already net
 | **Foundry** | Already live. More days: run `scripts/traffic.py` in the gateway repo. |
 | **Copilot Studio** | Publish an agent, have a few conversations. Credits land in `msdyn_aievents` within hours. Dataverse read access already works — no new credentials. |
 | **GitHub Copilot** | Copilot **Business** ($19/user/mo) or Enterprise on the org, ≥1 seat, and the **"Copilot usage metrics" policy enabled**. Premium-request USD additionally needs GitHub **Enterprise Cloud** + a classic PAT with `admin:enterprise`. |
-| **M365 Copilot** | An M365 Copilot SKU in the tenant, plus an app registration with **`Reports.Read.All` (Application)** and admin consent. Also **disable** *"Display concealed user names"* in M365 admin → Settings → Org settings → Reports, or UPNs arrive hashed and attribution is impossible. |
+| **M365 Copilot** | An M365 Copilot SKU in the tenant, plus an app registration with **`Reports.Read.All` (Application)** and admin consent. Also **disable** *"Display concealed user names"* in M365 admin → Settings → Org settings → Reports, or UPNs arrive hashed and attribution is impossible. **Cowork add-on:** requires that seat **plus** usage-based billing enabled and a spending policy; consumption is metered in Copilot Credits (\$0.01) and read from the M365 admin center (UI/CSV only, no API) — never from the Azure bill, where it hides inside the `Microsoft Copilot Studio` service. |
 
 ### Known limits
 - Foundry token metrics carry **no user identity** — the APIM gateway is the only path
@@ -206,31 +611,67 @@ depending purely on the invoker's licence. `msdyn_creditconsumed` is already net
 
 ```
 build_data.py                     real gateway JSON + mock → 7 CSVs
-build_dimensions.py               additive: conformed BU/app/env dims + universal identity
-build_personas.py                 additive: 5 persona pages + extractable data spectrum
-build_pbip.py                     → TMDL semantic model
-build_report.py                   → 4-page report layout
+build_dimensions.py               additive: conformed BU/app/env dims, universal identity,
+                                  platform discounts (run after build_data.py)
+build_personas.py                 additive: 4 persona pages (CFO, Governance, App Owner,
+                                  Extractable Data Spectrum)
+build_pbip.py                     → TMDL semantic model (regenerator — see note below)
+build_report.py                   → pages 1-4 of the report layout (regenerator — see note below)
+platform/validate/validate_pbip.py  offline PBIP validator + --fix-data-folder
+platform/validate/check_notebooks.py  static checks for the medallion notebooks
+platform/validate/check_report.py   report geometry/binding/contrast/slicer gate
+platform/validate/fix_tmdl_measures.py  wrap multi-line DAX in triple backticks
+platform/validate/build_directlake.py  import model -> Direct Lake model
+platform/validate/build_report_directlake.py  themed 8-page Fabric report
+platform/validate/probe_fabric.py   read-only "what can my account actually do" check
+platform/validate/probe_real_sources.py  read-only REAL-data availability probe
+platform/fabric/extract_real_bronze.py  live Azure/Graph/Dataverse -> REAL bronze CSVs
+platform/fabric/generate_studio_traffic.py  drive published Copilot Studio agents to
+                                  create real, billable credit consumption
+platform/fabric/extract_m365_graph.py   M365 Copilot seats + usage via Graph
+platform/fabric/price_seats.py          price seat entitlement from the rate card
+platform/deploy/deploy_semantic_model.py  deploy a TMDL model to Fabric
+platform/deploy/deploy_report.py    deploy a PBIR report to Fabric
+platform/deploy/fabric_deploy.py    workspace/lakehouse/notebook orchestrator
 AIFinOps.pbip                     open this
 AIFinOps.SemanticModel/
   definition/model.tmdl           relationships + DataFolder parameter
-  definition/tables/*.tmdl        11 tables, 42 measures
+  definition/tables/*.tmdl        11 tables, 57 measures
   data/*.csv                      ← swap these for live extracts
   synonyms.linguistic.json        Q&A / Fabric Copilot synonyms (standalone, apply-on-demand)
-AIFinOps.Report/report.json       10 pages (4 original + 5 persona + data spectrum)
+AIFinOps.Report/report.json       8 pages (4 core + 4 persona)
+AIFinOps.DirectLake.SemanticModel/  build output: Direct Lake model over gold
+AIFinOps.DirectLake.Report/         build output: themed 8-page Fabric report
 platform/medallion/               Fabric bronze/silver/gold notebooks (→ the gold star)
+  bronze/00_load_bronze_csv.py    MOCK bronze CSVs -> Delta (overwrite)
+  bronze/01_load_bronze_real_csv.py  REAL bronze CSVs -> Delta (append + dedupe)
 docs/ARCHITECTURE.md              decision record (rationale/tradeoffs/value/effort)
+docs/production-ingestion-architecture.md  how this runs on a schedule: pipeline
+                                  design, identity model, permissions matrix, runbook
+docs/real-data-spec.md            REAL-data availability matrix + collector specs
 docs/extractable-fields.md        per-platform field catalog (M365/GHC/Studio/Foundry) + medallion verdict
 docs/medallion-tables.md          full Bronze/Silver/Gold table inventory + Gold column schemas
 docs/medallion-examples.md        worked example rows for every table, traced Bronze→Silver→Gold
 docs/ai-insight-layer.md          Fabric Copilot + NL + RAG strategy
+docs/images/                      README screenshots
 data/                             raw Log Analytics exports (real Foundry)
 ```
 
+> **`build_pbip.py` and `build_report.py` are full regenerators and are currently behind the
+> committed artifacts.** `build_pbip.py` emits 7 tables / 5 relationships / 27 measures and no
+> `DataFolder` parameter; the committed model has 11 tables, 8 relationships and 57 measures.
+> `build_report.py` emits pages 1-4 against the committed 8. Re-running either one discards
+> that work. Treat the TMDL and `report.json` as the source of truth, and run
+> `platform/validate/validate_pbip.py` after any change.
+
 ## References
 - [Copilot Credits billing rates](https://learn.microsoft.com/en-us/microsoft-copilot-studio/requirements-messages-management)
+- [Microsoft 365 Copilot Cowork — get started](https://learn.microsoft.com/microsoft-365/copilot/cowork/get-started)
+- [Usage-based billing & Copilot Credits](https://learn.microsoft.com/microsoft-365/copilot/usage-based-billing-overview-copilot-credits)
+- [Copilot Studio credit capacity (Power Platform admin center)](https://learn.microsoft.com/power-platform/admin/manage-copilot-studio-copilot-credits-capacity)
 - [msdyn_AIEvent table reference](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/msdyn_aievent)
 - [Azure OpenAI monitoring data reference](https://learn.microsoft.com/en-us/azure/foundry/openai/monitor-openai-reference)
-- [getMicrosoft365CopilotUsageUserDetail](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/api/admin-settings/reports/copilotreportroot-getmicrosoft365copilotusageuserdetail)
-- [GitHub Copilot metrics REST](https://docs.github.com/en/rest/copilot/copilot-metrics)
-- [GitHub billing usage REST](https://docs.github.com/en/enterprise-cloud@latest/rest/billing/usage)
+- [copilotReportRoot (M365 Copilot usage APIs)](https://learn.microsoft.com/microsoft-365-copilot/extensibility/api/admin-settings/reports/resources/copilotreportroot)
+- [GitHub Copilot billing & usage (AI Credits)](https://docs.github.com/en/copilot/concepts/billing-and-usage/organizations-and-enterprises/billing)
+- [Microsoft FOCUS dataset schema (1.2-preview)](https://learn.microsoft.com/azure/cost-management-billing/dataset-schema/schema-index)
 - Sibling: [`ai-gateway-apim-finops`](https://github.com/natesanshreyas/ai-gateway-apim-finops)

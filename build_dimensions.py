@@ -36,6 +36,32 @@ def write(name, fieldnames, rows):
         w.writerows(rows)
 
 
+# ------------------------------------------------------------ PLATFORM DISCOUNTS
+# dim_platform.csv is emitted by build_data.py, which knows nothing about
+# negotiated rates, so re-running it used to silently drop this column and break
+# [Discounted Cost] / [Discount Savings] / [Forecast Cost (next 30d, net)].
+# Owning it here makes the column survive any regeneration order.
+# MOCK: replace with the customer's actual EA/MCA discounts.
+DISCOUNT_PCT = {
+    "Foundry": "0.15",
+    "GitHubCopilot": "0.05",
+    "CopilotStudio": "0.20",
+    "M365Copilot": "0.0",
+}
+platform = read("dim_platform.csv")
+for r in platform:
+    r.setdefault("addon_unit", "")
+    r.setdefault("addon_billing_model", "")
+    r.setdefault("enterprise_discount_pct", "")
+    if not r["enterprise_discount_pct"]:
+        r["enterprise_discount_pct"] = DISCOUNT_PCT.get(r["platform_key"], "0.0")
+write("dim_platform.csv",
+      ["platform_key", "platform_name", "billing_model", "native_unit",
+       "addon_unit", "addon_billing_model",
+       "has_token_telemetry", "has_native_cost", "is_variable_cost", "data_source",
+       "enterprise_discount_pct"],
+      platform)
+
 # ----------------------------------------------------------------- BUSINESS UNIT
 # Conform on dim_identity[business_unit] (the authoritative "home BU" of a
 # person or service principal). dim_cost_center carries a *different* BU label
@@ -78,7 +104,7 @@ APPS = {
     "APP-M365":     ("Microsoft 365 Copilot",     "copilot",   "BU-TECH",      "cio@contoso.com",         "ENV-PROD", "Medium", "TRUE"),
     "APP-GHCP":     ("GitHub Copilot",            "copilot",   "BU-TECH",      "cio@contoso.com",         "ENV-PROD", "Medium", "TRUE"),
     "APP-STUDIO":   ("Employee Support Agent",    "agent",     "BU-TECH",      "cio@contoso.com",         "ENV-PROD", "Medium", "TRUE"),
-    "APP-UNKNOWN":  ("Unattributed Workload",     "unknown",   "BU-UNALLOC",   "",                        "ENV-UNK",  "Unknown","FALSE"),
+    "APP-UNKNOWN":  ("Unattributed Workload",     "unattributed","BU-UNALLOC",   "",                        "ENV-UNK",  "Unassigned","FALSE"),
 }
 write("dim_application.csv",
       ["application_key", "application_name", "application_type",
@@ -91,9 +117,21 @@ write("dim_application.csv",
 
 # ----------------------------------------------------------------- UNIVERSAL IDENTITY
 identity = read("dim_identity.csv")
+# The Foundry gateway does not always record a ClientId/Oid, so build_data.py
+# emits identity_key="unknown" for those rows. Without a matching dimension row
+# Power BI silently creates a blank member on rel_usage_identity and the spend
+# disappears from every identity-sliced visual. Give it an explicit member, the
+# same way unattributed spend gets BU-UNALLOC and APP-UNKNOWN.
+UNKNOWN_IDENTITY = {
+    "identity_key": "unknown", "display_name": "Unattributed Identity",
+    "principal_type": "Unknown", "upn": "", "github_login": "",
+    "team": "", "business_unit": "Unallocated", "cost_center_key": "",
+}
+if not any(r["identity_key"] == "unknown" for r in identity):
+    identity.append(dict(UNKNOWN_IDENTITY))
 # principal_type domain today is {User, ServicePrincipal}; the identity_class
 # vocabulary is the universal set so future ManagedIdentity/Agent rows conform.
-CLASS = {"User": "Human", "ServicePrincipal": "ServicePrincipal"}
+CLASS = {"User": "Human", "ServicePrincipal": "ServicePrincipal", "Unknown": "Unknown"}
 id_home_bu = {}
 for r in identity:
     r["identity_class"] = CLASS.get(r["principal_type"], "Application")
@@ -139,6 +177,7 @@ for c in ("business_unit_key", "application_key", "environment_key"):
 write("fact_ai_usage.csv", fact_cols, fact)
 
 print("dimensions built:")
+print("  dim_platform     : +enterprise_discount_pct on", len(platform), "rows")
 print("  dim_business_unit:", len(BU), "rows")
 print("  dim_application  :", len(APPS), "rows")
 print("  dim_environment  : 4 rows")

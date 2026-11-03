@@ -16,6 +16,13 @@ python3 platform/data-store/build_store.py        # -> platform/data-store/finop
 python3 platform/localhost/app.py                 # -> http://localhost:8080
 ```
 
+On Windows use `python` rather than `python3`:
+
+```powershell
+python platform\data-store\build_store.py
+python platform\localhost\app.py
+```
+
 Open <http://localhost:8080> and click through the tabs.
 
 ---
@@ -47,7 +54,7 @@ Copilot / semantic-model Q&A but runs 100% locally. Try:
 | Step | Layer | Artifact |
 |------|-------|----------|
 | 1. Extract | Source telemetry | `docs/extractable-data-by-product.md`, `extractable_data_catalog` |
-| 2. Bronze  | Raw per-platform tables | `platform/fabric/gen_bronze_data.py` → `bronze_out/*.csv` |
+| 2. Bronze  | Raw per-platform tables | `platform/fabric/gen_bronze_data.py` → `bronze_out/*.csv` (MOCK)<br>`platform/fabric/extract_m365_graph.py` → `bronze_real/*.csv` (**REAL**, Microsoft Graph) |
 | 3. Store   | Portable data source | `platform/data-store/build_store.py` → `finops.db` |
 | 4. Gold + BI + AI | Semantic model + dashboards + Q&A | `AIFinOps.SemanticModel/`, `platform/localhost/app.py` |
 | 5. **Fabric push** | Land Bronze in a Lakehouse | `platform/fabric/load_bronze.py` (run once a Power BI license is assigned) |
@@ -55,8 +62,58 @@ Copilot / semantic-model Q&A but runs 100% locally. Try:
 Steps 1–4 run today with no license. Step 5 is the handoff to whoever owns the
 Fabric workspace — see `docs/bronze-layer-architecture.md`.
 
+## Real Azure billed cost (FOCUS export)
+
+Azure cost comes from a Cost Management **FOCUS** Parquet export, surfaced in
+Fabric through a zero-copy OneLake shortcut. Two stdlib-only scripts stand it up
+(`az login` for auth; both support `--dry-run` and `--steps`):
+
+```bash
+# 1. Azure side: resource group, ADLS Gen2 account, container, FOCUS exports + runs
+python3 platform/deploy/create_cost_export.py
+
+# 2. Fabric side: ADLS cloud connection + OneLake shortcut into bronze_real
+python3 platform/deploy/create_onelake_shortcut.py
+
+# 3. In Fabric, run the medallion notebooks in order, then refresh the model:
+#      03_bronze_azure_focus  ->  bronze_azure_cost_focus
+#      10_silver_conform      ->  silver_usage_azure + silver_azure_cost_detail
+#      20_gold_star           ->  fact_ai_usage + dim_*
+```
+
+| Piece | Value |
+|---|---|
+| Dataset | FOCUS (FinOps Foundation open spec), Parquet, daily granularity. Microsoft's current dataset is **1.2-preview**; the ingest tolerates both 1.0 and 1.2-preview (the 1.0→1.2 renames `x_InvoiceId`→`InvoiceId`, `x_PricingCurrency`→`PricingCurrency`, `x_SkuMeterName`→`SkuMeter` are handled by `focus_col` in `10_conform_usage.py`, picking each column by presence). |
+| Landing | `focus/{exportName}/{dateRange}/{runId}/part_0_0001.parquet` + `manifest.json` |
+| Files shortcut | `Files/azure_costmgmt_focus` in `bronze_real` — storage stays in the customer's subscription |
+| Bronze table | `bronze_azure_cost_focus` — a Files shortcut is not queryable as a table |
+| Table shortcut | `Tables/dbo/bronze_azure_cost_focus` in the silver lakehouse |
+| Provenance | `cost_is_estimated = false` — billed invoice cost, never rate-card modelled |
+
+**Verified end to end:** 79,426 FOCUS rows / **$7,048.73** billed Azure spend →
+`fact_ai_usage` 81,172 rows / $12,818.69, reconciling exactly (`AzureInfra`
+$6,342.24 + `AzureAI` $706.49) at 100% cost confidence on both platforms.
+
+Two non-obvious constraints the scripts handle:
+
+- Cost Management **refuses to create an export when shared-key auth is disabled**
+  on the destination storage account (HTTP 400). Tenants with a Modify policy that
+  forces `allowSharedKeyAccess=false` need a policy exemption first.
+- A Custom-timeframe export's `from`/`to` must sit **inside one calendar month**, so
+  historical backfill is one export per month.
+
+> **De-duplicate at period level, never row level** — see
+> `platform/medallion/README.md`. A row-key dedupe silently drops ~30% of the cost.
+
 ## Also runnable
-- **Power BI Desktop:** open `AIFinOps.pbip` (10 persona report pages, no Fabric needed).
+- **Power BI Desktop:** open `AIFinOps.pbip` (8 report pages, no Fabric needed).
+  Run `python platform/validate/validate_pbip.py --fix-data-folder` first.
+- **Validate the PBIP offline:** `python platform/validate/validate_pbip.py`
+- **REAL M365 licence data:** `python platform/fabric/extract_m365_graph.py --probe`
+  (see `platform/fabric/README-m365-graph.md`)
 - **Ad-hoc SQL:** `python3 platform/data-store/build_store.py --query "SELECT product, COUNT(*) FROM extractable_data_catalog GROUP BY product"`
 
-> All figures are **MOCK** demo data. Nothing here is relabeled as real customer spend.
+> All figures in the committed CSVs are **MOCK** demo data. Nothing here is
+> relabeled as real customer spend. The one REAL path is
+> `extract_m365_graph.py`, which writes to a gitignored directory and reports
+> seat counts as REAL while keeping derived dollars `cost_is_estimated=TRUE`.
